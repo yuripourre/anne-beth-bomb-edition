@@ -109,7 +109,7 @@ InputEngine = Class.extend({
                 this.actions['down'] = leftY > threshold;
                 this.actions['left'] = leftX < -threshold;
                 this.actions['right'] = leftX > threshold;
-                this.actions['bomb'] = gamepad.buttons[0].pressed; // Button 0
+                this.actions['bomb'] = gamepad.buttons[1].pressed; // Button 1
             } else if (i === 1) {
                 // Handling the second gamepad
                 const threshold = 0.2;
@@ -119,7 +119,7 @@ InputEngine = Class.extend({
                 this.actions['down2'] = leftY2 > threshold;
                 this.actions['left2'] = leftX2 < -threshold;
                 this.actions['right2'] = leftX2 > threshold;
-                this.actions['bomb2'] = gamepad.buttons[0].pressed; // Button 0
+                this.actions['bomb2'] = gamepad.buttons[1].pressed; // Button 1
             }
 
             // Trigger listeners for joystick actions

@@ -46,30 +46,6 @@ GameEngine = Class.extend({
         var queue = new createjs.LoadQueue();
         var that = this;
 
-        /*function handleFileLoad(event) {
-            console.log(event);
-            var item = event.item; // A reference to the item that was passed in to the LoadQueue
-
-            if ("playerBoy" === item.id) {
-                that.playerBoyImg = event.result;
-            } else if ("playerGirl" === item.id) {
-                that.playerGirlImg = event.result;
-            }
-
-            /!*that.playerGirl2Img = queue.getResult("playerGirl2");
-            that.tilesImgs.grass = queue.getResult("tile_grass");
-            that.tilesImgs.wall = queue.getResult("tile_wall");
-            that.tilesImgs.wood = queue.getResult("tile_wood");
-            that.bombImg = queue.getResult("bomb");
-            that.fireImg = queue.getResult("fire");
-            that.bonusesImg = queue.getResult("bonuses");*!/
-            // If everything is loaded
-            if (that.playerBoyImg && that.playerGirlImg) {
-
-            }
-        }
-        queue.on("fileload", handleFileLoad, this);*/
-
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
             that.playerGirlImg = queue.getResult("playerGirl");
@@ -84,21 +60,21 @@ GameEngine = Class.extend({
         });
 
         queue.loadManifest([
-            {id: "playerBoy", src: "./img/george.png"},
-            {id: "playerGirl", src: "./img/betty.png"},
-            {id: "playerGirl2", src: "./img/betty2.png"},
-            {id: "tile_grass", src: "./img/tile_grass.png"},
-            {id: "tile_wall", src: "./img/tile_wall.png"},
-            {id: "tile_wood", src: "./img/tile_wood.png"},
-            {id: "bomb", src: "./img/bomb.png"},
-            {id: "fire", src: "./img/fire.png"},
-            {id: "bonuses", src: "./img/bonuses.png"}
+            {id: "playerBoy", src: "static/img/george.png"},
+            {id: "playerGirl", src: "static/img/betty.png"},
+            {id: "playerGirl2", src: "static/img/betty2.png"},
+            {id: "tile_grass", src: "static/img/tile_grass.png"},
+            {id: "tile_wall", src: "static/img/tile_wall.png"},
+            {id: "tile_wood", src: "static/img/tile_wood.png"},
+            {id: "bomb", src: "static/img/bomb.png"},
+            {id: "fire", src: "static/img/fire.png"},
+            {id: "bonuses", src: "static/img/bonuses.png"}
         ]);
 
-        createjs.Sound.addEventListener("fileload", this.onSoundLoaded, this);
+        createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
         createjs.Sound.alternateExtensions = ["mp3"];
-        createjs.Sound.registerSound("./sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("./sound/game.ogg", "game");
+        createjs.Sound.registerSound("static/sound/bomb.ogg", "bomb");
+        createjs.Sound.registerSound("static/sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();
@@ -146,7 +122,7 @@ GameEngine = Class.extend({
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
-            createjs.Ticker.setFPS(this.fps);
+            createjs.Ticker.framerate = this.fps;
         }
 
         if (gGameEngine.playersCount > 0) {
@@ -161,8 +137,8 @@ GameEngine = Class.extend({
     },
 
     onSoundLoaded: function(sound) {
-        console.log("ONSOUNDLOADED");
-        console.log(sound);
+        console.log(this);
+        console.log(gGameEngine);
         if (sound.id === 'game') {
             gGameEngine.soundtrackLoaded = true;
             if (gGameEngine.playersCount > 0) {
@@ -174,7 +150,7 @@ GameEngine = Class.extend({
     playSoundtrack: function() {
         if (!gGameEngine.soundtrackPlaying) {
             gGameEngine.soundtrack = createjs.Sound.play("game", "none", 0, 0, -1);
-            gGameEngine.soundtrack.setVolume(1);
+            gGameEngine.soundtrack.volume = 1;
             gGameEngine.soundtrackPlaying = true;
         }
     },
@@ -208,8 +184,8 @@ GameEngine = Class.extend({
     drawTiles: function() {
         for (var i = 0; i < this.tilesY; i++) {
             for (var j = 0; j < this.tilesX; j++) {
-                if ((i == 0 || j == 0 || i == this.tilesY - 1 || j == this.tilesX - 1)
-                    || (j % 2 == 0 && i % 2 == 0)) {
+                if ((i === 0 || j === 0 || i === this.tilesY - 1 || j === this.tilesX - 1)
+                    || (j % 2 === 0 && i % 2 === 0)) {
                     // Wall tiles
                     var tile = new Tile('wall', { x: j, y: i });
                     this.stage.addChild(tile.bmp);
@@ -239,7 +215,7 @@ GameEngine = Class.extend({
         var woods = [];
         for (var i = 0; i < this.tiles.length; i++) {
             var tile = this.tiles[i];
-            if (tile.material == 'wood') {
+            if (tile.material === 'wood') {
                 woods.push(tile);
             }
         }
@@ -259,10 +235,10 @@ GameEngine = Class.extend({
                 }
 
                 var tile = woods[i];
-                if ((j == 0 && tile.position.x < this.tilesX / 2 && tile.position.y < this.tilesY / 2)
-                    || (j == 1 && tile.position.x < this.tilesX / 2 && tile.position.y > this.tilesY / 2)
-                    || (j == 2 && tile.position.x > this.tilesX / 2 && tile.position.y < this.tilesX / 2)
-                    || (j == 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
+                if ((j === 0 && tile.position.x < this.tilesX / 2 && tile.position.y < this.tilesY / 2)
+                    || (j === 1 && tile.position.x < this.tilesX / 2 && tile.position.y > this.tilesY / 2)
+                    || (j === 2 && tile.position.x > this.tilesX / 2 && tile.position.y < this.tilesX / 2)
+                    || (j === 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
 
                     var typePosition = placedCount % 3;
                     var bonus = new Bonus(tile.position, typePosition);
@@ -337,7 +313,7 @@ GameEngine = Class.extend({
     getTile: function(position) {
         for (var i = 0; i < this.tiles.length; i++) {
             var tile = this.tiles[i];
-            if (tile.position.x == position.x && tile.position.y == position.y) {
+            if (tile.position.x === position.x && tile.position.y === position.y) {
                 return tile;
             }
         }
@@ -354,11 +330,11 @@ GameEngine = Class.extend({
     gameOver: function(status) {
         if (gGameEngine.menu.visible) { return; }
 
-        if (status == 'win') {
+        if (status === 'win') {
             var winText = "You won!";
             if (gGameEngine.playersCount > 1) {
                 var winner = gGameEngine.getWinner();
-                winText = winner == 0 ? "Player 1 won!" : "Player 2 won!";
+                winText = winner === 0 ? "Player 1 won!" : "Player 2 won!";
             }
             this.menu.show([{text: winText, color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
         } else {
