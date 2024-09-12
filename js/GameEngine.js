@@ -45,6 +45,31 @@ GameEngine = Class.extend({
         // Load assets
         var queue = new createjs.LoadQueue();
         var that = this;
+
+        /*function handleFileLoad(event) {
+            console.log(event);
+            var item = event.item; // A reference to the item that was passed in to the LoadQueue
+
+            if ("playerBoy" === item.id) {
+                that.playerBoyImg = event.result;
+            } else if ("playerGirl" === item.id) {
+                that.playerGirlImg = event.result;
+            }
+
+            /!*that.playerGirl2Img = queue.getResult("playerGirl2");
+            that.tilesImgs.grass = queue.getResult("tile_grass");
+            that.tilesImgs.wall = queue.getResult("tile_wall");
+            that.tilesImgs.wood = queue.getResult("tile_wood");
+            that.bombImg = queue.getResult("bomb");
+            that.fireImg = queue.getResult("fire");
+            that.bonusesImg = queue.getResult("bonuses");*!/
+            // If everything is loaded
+            if (that.playerBoyImg && that.playerGirlImg) {
+
+            }
+        }
+        queue.on("fileload", handleFileLoad, this);*/
+
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
             that.playerGirlImg = queue.getResult("playerGirl");
@@ -57,22 +82,23 @@ GameEngine = Class.extend({
             that.bonusesImg = queue.getResult("bonuses");
             that.setup();
         });
+
         queue.loadManifest([
-            {id: "playerBoy", src: "img/george.png"},
-            {id: "playerGirl", src: "img/betty.png"},
-            {id: "playerGirl2", src: "img/betty2.png"},
-            {id: "tile_grass", src: "img/tile_grass.png"},
-            {id: "tile_wall", src: "img/tile_wall.png"},
-            {id: "tile_wood", src: "img/tile_wood.png"},
-            {id: "bomb", src: "img/bomb.png"},
-            {id: "fire", src: "img/fire.png"},
-            {id: "bonuses", src: "img/bonuses.png"}
+            {id: "playerBoy", src: "./img/george.png"},
+            {id: "playerGirl", src: "./img/betty.png"},
+            {id: "playerGirl2", src: "./img/betty2.png"},
+            {id: "tile_grass", src: "./img/tile_grass.png"},
+            {id: "tile_wall", src: "./img/tile_wall.png"},
+            {id: "tile_wood", src: "./img/tile_wood.png"},
+            {id: "bomb", src: "./img/bomb.png"},
+            {id: "fire", src: "./img/fire.png"},
+            {id: "bonuses", src: "./img/bonuses.png"}
         ]);
 
-        createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
+        createjs.Sound.addEventListener("fileload", this.onSoundLoaded, this);
         createjs.Sound.alternateExtensions = ["mp3"];
-        createjs.Sound.registerSound("sound/bomb.ogg", "bomb");
-        createjs.Sound.registerSound("sound/game.ogg", "game");
+        createjs.Sound.registerSound("./sound/bomb.ogg", "bomb");
+        createjs.Sound.registerSound("./sound/game.ogg", "game");
 
         // Create menu
         this.menu = new Menu();
@@ -101,7 +127,7 @@ GameEngine = Class.extend({
         // Timeout because when you press enter in address bar too long, it would not show menu
         setTimeout(function() {
             gInputEngine.addListener('restart', function() {
-                if (gGameEngine.playersCount == 0) {
+                if (gGameEngine.playersCount === 0) {
                     gGameEngine.menu.setMode('single');
                 } else {
                     gGameEngine.menu.hide();
@@ -135,7 +161,9 @@ GameEngine = Class.extend({
     },
 
     onSoundLoaded: function(sound) {
-        if (sound.id == 'game') {
+        console.log("ONSOUNDLOADED");
+        console.log(sound);
+        if (sound.id === 'game') {
             gGameEngine.soundtrackLoaded = true;
             if (gGameEngine.playersCount > 0) {
                 gGameEngine.playSoundtrack();
@@ -252,23 +280,25 @@ GameEngine = Class.extend({
     spawnBots: function() {
         this.bots = [];
 
+        var botImg = gGameEngine.playerBoyImg;
+
         if (this.botsCount >= 1) {
-            var bot2 = new Bot({ x: 1, y: this.tilesY - 2 });
+            var bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
             this.bots.push(bot2);
         }
 
         if (this.botsCount >= 2) {
-            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 });
+            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg);
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 });
+            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, botImg);
             this.bots.push(bot);
         }
 
         if (this.botsCount >= 4) {
-            var bot = new Bot({ x: 1, y: 1 });
+            var bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
             this.bots.push(bot);
         }
     },
@@ -277,7 +307,7 @@ GameEngine = Class.extend({
         this.players = [];
 
         if (this.playersCount >= 1) {
-            var player = new Player({ x: 1, y: 1 });
+            var player = new Player({ x: 1, y: 1 }, null, null, gGameEngine.playerGirlImg);
             this.players.push(player);
         }
 
@@ -289,7 +319,7 @@ GameEngine = Class.extend({
                 'right': 'right2',
                 'bomb': 'bomb2'
             };
-            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1);
+            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1, gGameEngine.playerGirl2Img);
             this.players.push(player2);
         }
     },

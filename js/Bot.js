@@ -35,8 +35,8 @@ Bot = Player.extend({
     startTimer: 0,
     started: false,
 
-    init: function(position) {
-        this._super(position);
+    init: function(position, controls, id, img) {
+        this._super(position, controls, id, img);
         this.findTargetPosition();
         this.startTimerMax = Math.random() * 60;
     },
