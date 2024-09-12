@@ -203,27 +203,27 @@ Player = Entity.extend({
         var bmp2 = Utils.convertToBitmapPosition(pos2);
 
         // in front of current position
-        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) === 'grass') {
+        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) === TILE_FLOOR) {
             position = this.position;
         }
         // right bottom
         // left top
-        else if (gGameEngine.getTileMaterial(pos1) === 'grass'
+        else if (gGameEngine.getTileMaterial(pos1) === TILE_FLOOR
             && Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) === 'grass') {
+            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) === TILE_FLOOR) {
                 position = pos1;
             }
         }
         // right top
         // left bottom
-        else if (gGameEngine.getTileMaterial(pos2) === 'grass'
+        else if (gGameEngine.getTileMaterial(pos2) === TILE_FLOOR
             && Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) === 'grass') {
+            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) === TILE_FLOOR) {
                 position = pos2;
             }
         }
 
-        if (position.x &&  gGameEngine.getTileMaterial(position) === 'grass') {
+        if (position.x &&  gGameEngine.getTileMaterial(position) === TILE_FLOOR) {
             return Utils.convertToBitmapPosition(position);
         }
     },

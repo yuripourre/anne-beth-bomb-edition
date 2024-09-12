@@ -154,7 +154,7 @@ Bot = Player.extend({
             else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) === 'grass' && !this.hasBomb(position)) {
+            if (gGameEngine.getTileMaterial(position) === TILE_FLOOR && !this.hasBomb(position)) {
                 targets.push(position);
             }
         }
@@ -254,7 +254,7 @@ Bot = Player.extend({
             else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) === 'wood') {
+            if (gGameEngine.getTileMaterial(position) === TILE_BLOCK) {
                 return gGameEngine.getTile(position);
             }
         }

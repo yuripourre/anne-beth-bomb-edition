@@ -137,8 +137,6 @@ GameEngine = Class.extend({
     },
 
     onSoundLoaded: function(sound) {
-        console.log(this);
-        console.log(gGameEngine);
         if (sound.id === 'game') {
             gGameEngine.soundtrackLoaded = true;
             if (gGameEngine.playersCount > 0) {
@@ -187,12 +185,12 @@ GameEngine = Class.extend({
                 if ((i === 0 || j === 0 || i === this.tilesY - 1 || j === this.tilesX - 1)
                     || (j % 2 === 0 && i % 2 === 0)) {
                     // Wall tiles
-                    var tile = new Tile('wall', { x: j, y: i });
+                    var tile = new Tile(TILE_WALL, { x: j, y: i });
                     this.stage.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
-                    var tile = new Tile('grass', { x: j, y: i });
+                    var tile = new Tile(TILE_FLOOR, { x: j, y: i });
                     this.stage.addChild(tile.bmp);
 
                     // Wood tiles
@@ -201,7 +199,7 @@ GameEngine = Class.extend({
                         && !(i <= 2 && j >= this.tilesX - 3)
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
-                        var wood = new Tile('wood', { x: j, y: i });
+                        var wood = new Tile(TILE_BLOCK, { x: j, y: i });
                         this.stage.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
@@ -215,7 +213,7 @@ GameEngine = Class.extend({
         var woods = [];
         for (var i = 0; i < this.tiles.length; i++) {
             var tile = this.tiles[i];
-            if (tile.material === 'wood') {
+            if (tile.material === TILE_BLOCK) {
                 woods.push(tile);
             }
         }
@@ -324,7 +322,7 @@ GameEngine = Class.extend({
      */
     getTileMaterial: function(position) {
         var tile = this.getTile(position);
-        return (tile) ? tile.material : 'grass' ;
+        return (tile) ? tile.material : TILE_FLOOR ;
     },
 
     gameOver: function(status) {
