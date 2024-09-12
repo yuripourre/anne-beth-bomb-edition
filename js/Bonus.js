@@ -16,7 +16,7 @@ Bonus = Entity.extend({
         var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
-        this.bmp.sourceRect = new createjs.Rectangle(typePosition * gGameEngine.tileSize, 0, tileSize, tileSize);
+        this.bmp.sourceRect = new createjs.Rectangle(typePosition * tileSize, 0, tileSize, tileSize);
         gGameEngine.stage.addChild(this.bmp);
     },
 
