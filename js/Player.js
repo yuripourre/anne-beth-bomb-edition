@@ -251,12 +251,12 @@ Player = Entity.extend({
             var tilePosition = tiles[i].position;
 
             var tile = {};
-            const leftBorder = 26;
-            const topBorder = 20;
+            const leftBorder = 22;
+            const topBorder = 18;
 
             tile.left = tilePosition.x * gGameEngine.tileSize + leftBorder;
             tile.top = tilePosition.y * gGameEngine.tileSize + topBorder;
-            tile.right = tile.left + gGameEngine.tileSize - 28;
+            tile.right = tile.left + gGameEngine.tileSize - 26;
             tile.bottom = tile.top + gGameEngine.tileSize - 26;
 
             if (gGameEngine.intersectRect(player, tile)) {
