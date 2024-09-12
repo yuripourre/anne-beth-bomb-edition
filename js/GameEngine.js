@@ -6,7 +6,7 @@ GameEngine = Class.extend({
     fps: 50,
     botsCount: 2, /* 0 - 3 */
     playersCount: 2, /* 1 - 2 */
-    bonusesPercent: 16,
+    powerUpsPercent: 16,
 
     stage: null,
     menu: null,
@@ -14,7 +14,7 @@ GameEngine = Class.extend({
     bots: [],
     tiles: [],
     bombs: [],
-    bonuses: [],
+    powerUps: [],
 
     playerBoyImg: null,
     playerGirlImg: null,
@@ -22,7 +22,7 @@ GameEngine = Class.extend({
     tilesImgs: {},
     bombImg: null,
     fireImg: null,
-    bonusesImg: null,
+    powerUpsImg: null,
 
     playing: false,
     mute: false,
@@ -55,7 +55,7 @@ GameEngine = Class.extend({
             that.tilesImgs.wood = queue.getResult("tile_wood");
             that.bombImg = queue.getResult("bomb");
             that.fireImg = queue.getResult("fire");
-            that.bonusesImg = queue.getResult("bonuses");
+            that.powerUpsImg = queue.getResult("powerups");
             that.setup();
         });
 
@@ -68,7 +68,7 @@ GameEngine = Class.extend({
             {id: "tile_wood", src: "static/img/tile_wood.png"},
             {id: "bomb", src: "static/img/bomb.png"},
             {id: "fire", src: "static/img/fire.png"},
-            {id: "bonuses", src: "static/img/bonuses.png"}
+            {id: "powerups", src: "static/img/powerups.png"}
         ]);
 
         createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
@@ -87,11 +87,11 @@ GameEngine = Class.extend({
 
         this.bombs = [];
         this.tiles = [];
-        this.bonuses = [];
+        this.powerUps = [];
 
         // Draw tiles
         this.drawTiles();
-        this.drawBonuses();
+        this.drawPowerUps();
 
         this.spawnBots();
         this.spawnPlayers();
@@ -208,7 +208,7 @@ GameEngine = Class.extend({
         }
     },
 
-    drawBonuses: function() {
+    drawPowerUps: function() {
         // Cache woods tiles
         var woods = [];
         for (var i = 0; i < this.tiles.length; i++) {
@@ -223,12 +223,12 @@ GameEngine = Class.extend({
             return 0.5 - Math.random();
         });
 
-        // Distribute bonuses to quarters of map precisely fairly
+        // Distribute power ups to quarters of map precisely fairly
         for (var j = 0; j < 4; j++) {
-            var bonusesCount = Math.round(woods.length * this.bonusesPercent * 0.01 / 4);
+            var powerUpsCount = Math.round(woods.length * this.powerUpsPercent * 0.01 / 4);
             var placedCount = 0;
             for (var i = 0; i < woods.length; i++) {
-                if (placedCount > bonusesCount) {
+                if (placedCount > powerUpsCount) {
                     break;
                 }
 
@@ -239,8 +239,8 @@ GameEngine = Class.extend({
                     || (j === 3 && tile.position.x > this.tilesX / 2 && tile.position.y > this.tilesX / 2)) {
 
                     var typePosition = placedCount % 3;
-                    var bonus = new Bonus(tile.position, typePosition);
-                    this.bonuses.push(bonus);
+                    var powerUp = new PowerUp(tile.position, typePosition);
+                    this.powerUps.push(powerUp);
 
                     // Move wood to front
                     this.moveToFront(tile.bmp);

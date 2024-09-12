@@ -182,7 +182,7 @@ Player = Entity.extend({
             this.die();
         }
 
-        this.handleBonusCollision();
+        this.handlePowerUpCollision();
     },
 
     /**
@@ -311,25 +311,25 @@ Player = Entity.extend({
     /**
      * Checks whether we have got bonus and applies it.
      */
-    handleBonusCollision: function() {
-        for (var i = 0; i < gGameEngine.bonuses.length; i++) {
-            var bonus = gGameEngine.bonuses[i];
-            if (Utils.comparePositions(bonus.position, this.position)) {
-                this.applyBonus(bonus);
-                bonus.destroy();
+    handlePowerUpCollision: function() {
+        for (var i = 0; i < gGameEngine.powerUps.length; i++) {
+            var powerUp = gGameEngine.powerUps[i];
+            if (Utils.comparePositions(powerUp.position, this.position)) {
+                this.applyPowerUp(powerUp);
+                powerUp.destroy();
             }
         }
     },
 
     /**
-     * Applies bonus.
+     * Applies power-up.
      */
-    applyBonus: function(bonus) {
-        if (bonus.type == 'speed') {
+    applyPowerUp: function(powerUp) {
+        if (powerUp.type === POWER_UP_SPEED) {
             this.velocity += 0.8;
-        } else if (bonus.type == 'bomb') {
+        } else if (powerUp.type === POWER_UP_BOMB) {
             this.bombsMax++;
-        } else if (bonus.type == 'fire') {
+        } else if (powerUp.type === POWER_UP_FIRE) {
             this.bombStrength++;
         }
     },

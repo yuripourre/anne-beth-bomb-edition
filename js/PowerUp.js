@@ -1,5 +1,9 @@
-Bonus = Entity.extend({
-    types: ['speed', 'bomb', 'fire'],
+POWER_UP_BOMB = 'bomb';
+POWER_UP_FIRE = 'fire';
+POWER_UP_SPEED = 'speed';
+
+PowerUp = Entity.extend({
+    types: [POWER_UP_SPEED, POWER_UP_BOMB, POWER_UP_FIRE],
 
     type: '',
     position: {},
@@ -12,7 +16,7 @@ Bonus = Entity.extend({
 
         var tileSize = gGameEngine.tileSize;
         
-        this.bmp = new createjs.Bitmap(gGameEngine.bonusesImg);
+        this.bmp = new createjs.Bitmap(gGameEngine.powerUpsImg);
         var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
@@ -22,6 +26,6 @@ Bonus = Entity.extend({
 
     destroy: function() {
         gGameEngine.stage.removeChild(this.bmp);
-        Utils.removeFromArray(gGameEngine.bonuses, this);
+        Utils.removeFromArray(gGameEngine.powerUps, this);
     }
 });

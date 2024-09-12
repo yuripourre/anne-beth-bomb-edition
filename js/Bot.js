@@ -81,7 +81,7 @@ Bot = Player.extend({
         if (!this.wait) {
             this.moveToTargetPosition();
         }
-        this.handleBonusCollision();
+        this.handlePowerUpCollision();
 
         if (this.detectFireCollision()) {
             // Bot has to die
@@ -205,8 +205,8 @@ Bot = Player.extend({
         return targets[Math.floor(Math.random() * targets.length)];
     },
 
-    applyBonus: function(bonus) {
-        this._super(bonus);
+    applyPowerUp: function(powerUp) {
+        this._super(powerUp);
 
         // It is too dangerous to have more bombs available
         this.bombsMax = 1;
