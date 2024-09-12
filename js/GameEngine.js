@@ -385,7 +385,7 @@ GameEngine = Class.extend({
      * Moves specified child to the front.
      */
     moveToFront: function(child) {
-        var children = gGameEngine.stage.getNumChildren();
+        var children = gGameEngine.stage.numChildren;
         gGameEngine.stage.setChildIndex(child, children - 1);
     },
 
