@@ -1,47 +1,47 @@
-Bot = Player.extend({
+class Bot extends Player {
     /**
      * Current direction
      */
-    direction: 'up',
-    lastDirection: '',
+    direction = 'up';
+    lastDirection = '';
 
     /**
      * Directions that are not allowed to go because of collision
      */
-    excludeDirections: [],
+    excludeDirections = [];
 
     /**
      * Current X axis direction
      */
-    dirX: 0,
+    dirX = 0;
 
     /**
      * Current Y axis direction
      */
-    dirY: -1,
+    dirY = -1;
 
     /**
      * Target position on map we are heading to
      */
-    previousPosition: {},
-    targetPosition: {},
-    targetBitmapPosition: {},
+    previousPosition = {};
+    targetPosition = {};
+    targetBitmapPosition = {};
 
-    bombsMax: 1,
+    bombsMax = 1;
 
-    wait: false,
+    wait = false;
 
-    startTimerMax: 60,
-    startTimer: 0,
-    started: false,
+    startTimerMax = 60;
+    startTimer = 0;
+    started = false;
 
-    init: function(position, controls, id, img) {
-        this._super(position, controls, id, img);
+    constructor(position, controls, id, img) {
+        super(position, controls, id, img);
         this.findTargetPosition();
         this.startTimerMax = Math.random() * 60;
-    },
+    }
 
-    update: function() {
+    update() {
          if (!this.alive) {
             this.fade();
             return;
@@ -88,12 +88,12 @@ Bot = Player.extend({
             this.die();
         }
 
-    },
+    }
 
     /**
      * Finds the next tile position where we should move.
      */
-    findTargetPosition: function() {
+    findTargetPosition() {
         var target = { x: this.position.x, y: this.position.y };
         target.x += this.dirX;
         target.y += this.dirY;
@@ -114,12 +114,12 @@ Bot = Player.extend({
             this.loadTargetPosition(this.targetPosition);
             this.targetBitmapPosition = Utils.convertToBitmapPosition(this.targetPosition);
         }
-    },
+    }
 
     /**
      * Moves a step forward to target position.
      */
-    moveToTargetPosition: function() {
+    moveToTargetPosition() {
         this.animate(this.direction);
 
         var velocity = this.velocity;
@@ -138,12 +138,12 @@ Bot = Player.extend({
         }
 
         this.updatePosition();
-    },
+    }
 
     /**
      * Returns near grass tiles.
      */
-    getPossibleTargets: function() {
+    getPossibleTargets() {
         var targets = [];
         for (var i = 0; i < 4; i++) {
             var dirX;
@@ -169,12 +169,12 @@ Bot = Player.extend({
 
         var isLucky = Math.random() > 0.3;
         return safeTargets.length > 0 && isLucky ? safeTargets : targets;
-    },
+    }
 
     /**
      * Loads vectors and animation name for target position.
      */
-    loadTargetPosition: function(position) {
+    loadTargetPosition(position) {
         this.dirX = position.x - this.position.x;
         this.dirY = position.y - this.position.y;
         if (this.dirX === 1 && this.dirY === 0) {
@@ -186,37 +186,37 @@ Bot = Player.extend({
         } else if (this.dirX === 0 && this.dirY === -1) {
             this.direction = 'up';
         }
-    },
+    }
 
     /**
      * Gets previous position by current position and direction vector.
      */
-    getPreviousPosition: function() {
+    getPreviousPosition() {
         var previous = { x: this.targetPosition.x, y: this.targetPosition.y };
         previous.x -= this.dirX;
         previous.y -= this.dirY;
         return previous;
-    },
+    }
 
     /**
      * Returns random item from array.
      */
-    getRandomTarget: function(targets) {
+    getRandomTarget(targets) {
         return targets[Math.floor(Math.random() * targets.length)];
-    },
+    }
 
-    applyPowerUp: function(powerUp) {
-        this._super(powerUp);
+    applyPowerUp(powerUp) {
+        super.applyPowerUp(powerUp);
 
         // It is too dangerous to have more bombs available
         this.bombsMax = 1;
-    },
+    }
 
     /**
      * Game is over when no bots and one player left.
      */
-    die: function() {
-        this._super();
+    die() {
+        super.die();
         var botsAlive = false;
 
         // Cache bots
@@ -239,12 +239,12 @@ Bot = Player.extend({
         if (!botsAlive && gGameEngine.countPlayersAlive() === 1) {
             gGameEngine.gameOver('win');
         }
-    },
+    }
 
     /**
      * Checks whether there is any wood around.
      */
-    getNearWood: function() {
+    getNearWood() {
         for (var i = 0; i < 4; i++) {
             var dirX;
             var dirY;
@@ -258,12 +258,12 @@ Bot = Player.extend({
                 return gGameEngine.getTile(position);
             }
         }
-    },
+    }
 
     /**
      * Checks whether player is near. If yes and we are angry, return true.
      */
-    wantKillPlayer: function() {
+    wantKillPlayer() {
         var isNear = false;
 
         for (var i = 0; i < 4; i++) {
@@ -288,12 +288,12 @@ Bot = Player.extend({
         if (isNear && isAngry) {
             return true;
         }
-    },
+    }
 
     /**
      * Places the bomb in current position
      */
-    plantBomb: function() {
+    plantBomb() {
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             if (Utils.comparePositions(bomb.position, this.position)) {
@@ -313,12 +313,12 @@ Bot = Player.extend({
                 that.wait = false;
             });
         }
-    },
+    }
 
     /**
      * Checks whether position is safe  and possible explosion cannot kill us.
      */
-    isSafe: function(position) {
+    isSafe(position) {
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             var fires = bomb.getDangerPositions();
@@ -330,9 +330,9 @@ Bot = Player.extend({
             }
         }
         return true;
-    },
+    }
 
-    hasBomb: function(position) {
+    hasBomb(position) {
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             if (Utils.comparePositions(bomb.position, position)) {
@@ -341,4 +341,4 @@ Bot = Player.extend({
         }
         return false;
     }
-});
+}

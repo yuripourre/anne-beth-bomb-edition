@@ -1,22 +1,22 @@
-Menu = Class.extend({
-    visible: true,
+class Menu {
+    visible = true;
 
-    views: [],
+    views = [];
 
-    init: function() {
+    constructor() {
         gGameEngine.botsCount = 4;
         gGameEngine.playersCount = 0;
 
         this.showLoader();
-    },
+    }
 
-    show: function(text) {
+    show(text) {
         this.visible = true;
 
         this.draw(text);
-    },
+    }
 
-    hide: function() {
+    hide() {
         this.visible = false;
 
         for (var i = 0; i < this.views.length; i++) {
@@ -24,29 +24,29 @@ Menu = Class.extend({
         }
 
         this.views = [];
-    },
+    }
 
-    update: function() {
+    update() {
         if (this.visible) {
             for (var i = 0; i < this.views.length; i++) {
                 gGameEngine.moveToFront(this.views[i]);
             }
         }
-    },
+    }
 
-    setHandCursor: function(btn) {
+    setHandCursor(btn) {
         btn.addEventListener('mouseover', function() {
             document.body.style.cursor = 'pointer';
         });
         btn.addEventListener('mouseout', function() {
             document.body.style.cursor = 'auto';
         });
-    },
+    }
 
-    setMode: function(mode) {
+    setMode(mode) {
         this.hide();
 
-        if (mode == 'single') {
+        if (mode === 'single') {
             gGameEngine.botsCount = 3;
             gGameEngine.playersCount = 1;
         } else {
@@ -56,9 +56,9 @@ Menu = Class.extend({
 
         gGameEngine.playing = true;
         gGameEngine.restart();
-    },
+    }
 
-    draw: function(text) {
+    draw(text) {
         var that = this;
 
         // semi-transparent black background
@@ -162,9 +162,9 @@ Menu = Class.extend({
         multiIconBoy.y = iconsY;
         gGameEngine.stage.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
-    },
+    }
 
-    showLoader: function() {
+    showLoader() {
         var bgGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
         gGameEngine.stage.addChild(bg);
@@ -175,4 +175,4 @@ Menu = Class.extend({
         gGameEngine.stage.addChild(loadingText);
         gGameEngine.stage.update();
     }
-});
+}

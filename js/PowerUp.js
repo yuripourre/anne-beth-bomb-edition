@@ -2,14 +2,14 @@ POWER_UP_BOMB = 'bomb';
 POWER_UP_FIRE = 'fire';
 POWER_UP_SPEED = 'speed';
 
-PowerUp = Entity.extend({
-    types: [POWER_UP_SPEED, POWER_UP_BOMB, POWER_UP_FIRE],
+class PowerUp {
+    types = [POWER_UP_SPEED, POWER_UP_BOMB, POWER_UP_FIRE];
 
-    type: '',
-    position: {},
-    bmp: null,
+    type = '';
+    position = {};
+    bmp = null;
 
-    init: function(position, typePosition) {
+    constructor(position, typePosition) {
         this.type = this.types[typePosition];
         
         this.position = position;
@@ -22,10 +22,10 @@ PowerUp = Entity.extend({
         this.bmp.y = pixels.y;
         this.bmp.sourceRect = new createjs.Rectangle(typePosition * tileSize, 0, tileSize, tileSize);
         gGameEngine.stage.addChild(this.bmp);
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         gGameEngine.stage.removeChild(this.bmp);
         Utils.removeFromArray(gGameEngine.powerUps, this);
     }
-});
+}

@@ -1,13 +1,13 @@
-InputEngine = Class.extend({
-    bindings: {},
-    actions: {},
-    listeners: [],
-    gamepads: [], // To track multiple gamepads
-    joystickPolling: null,
+class InputEngine {
+    bindings = {};
+    actions = {};
+    listeners = [];
+    gamepads = []; // To track multiple gamepads
+    joystickPolling = null;
 
-    init: function() {},
+    constructor() {}
 
-    setup: function() {
+    setup() {
         // Keyboard bindings
         this.bind(38, 'up');
         this.bind(37, 'left');
@@ -41,18 +41,18 @@ InputEngine = Class.extend({
             delete this.gamepads[event.gamepad.index];
             if (this.gamepads.length === 0) this.stopPollingJoystick();
         });
-    },
+    }
 
-    onKeyDown: function(event) {
+    onKeyDown(event) {
         var action = this.bindings[event.keyCode];
         if (action) {
             this.actions[action] = true;
             event.preventDefault();
         }
         return false;
-    },
+    }
 
-    onKeyUp: function(event) {
+    onKeyUp(event) {
         var action = this.bindings[event.keyCode];
         if (action) {
             this.actions[action] = false;
@@ -60,40 +60,40 @@ InputEngine = Class.extend({
             event.preventDefault();
         }
         return false;
-    },
+    }
 
-    bind: function(key, action) {
+    bind(key, action) {
         this.bindings[key] = action;
-    },
+    }
 
-    addListener: function(action, listener) {
+    addListener(action, listener) {
         this.listeners[action] = this.listeners[action] || [];
         this.listeners[action].push(listener);
-    },
+    }
 
-    triggerListeners: function(action) {
+    triggerListeners(action) {
         var listeners = this.listeners[action];
         if (listeners) {
             for (var i = 0; i < listeners.length; i++) {
                 listeners[i]();
             }
         }
-    },
+    }
 
-    removeAllListeners: function() {
+    removeAllListeners() {
         this.listeners = [];
-    },
+    }
 
-    startPollingJoystick: function() {
+    startPollingJoystick() {
         this.joystickPolling = setInterval(this.pollGamepads.bind(this), 1000 / 60); // Poll 60 times per second
-    },
+    }
 
-    stopPollingJoystick: function() {
+    stopPollingJoystick() {
         clearInterval(this.joystickPolling);
         this.joystickPolling = null;
-    },
+    }
 
-    pollGamepads: function() {
+    pollGamepads() {
         const gamepads = navigator.getGamepads();
 
         for (let i = 0; i < gamepads.length; i++) {
@@ -130,6 +130,6 @@ InputEngine = Class.extend({
             }
         }
     }
-});
+}
 
 gInputEngine = new InputEngine();

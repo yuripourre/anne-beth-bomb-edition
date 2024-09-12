@@ -1,59 +1,59 @@
-Player = Entity.extend({
-    id: 0,
+class Player {
+    id = 0;
 
     /**
      * Moving speed
      */
-    velocity: 2,
+    velocity = 2;
 
     /**
      * Max number of bombs user can spawn
      */
-    bombsMax: 1,
+    bombsMax = 1;
 
     /**
      * How far the fire reaches when bomb explodes
      */
-    bombStrength: 1,
+    bombStrength = 1;
 
     /**
      * Entity position on map grid
      */
-    position: {},
+    position = {};
 
     /**
      * Bitmap dimensions
      */
-    size: {
+    size = {
         w: 48,
         h: 48
-    },
+    };
 
     /**
      * Bitmap animation
      */
-    bmp: null,
+    bmp = null;
 
-    alive: true,
+    alive = true;
 
-    bombs: [],
+    bombs = [];
 
-    controls: {
+    controls = {
         'up': 'up',
         'left': 'left',
         'down': 'down',
         'right': 'right',
         'bomb': 'bomb'
-    },
+    };
 
     /**
      * Bomb that player can escape from even when there is a collision
      */
-    escapeBomb: null,
+    escapeBomb = null;
 
-    deadTimer: 0,
+    deadTimer = 0;
 
-    init: function(position, controls, id, img) {
+    constructor(position, controls, id, img) {
         if (id) {
             this.id = id;
         }
@@ -85,9 +85,9 @@ Player = Entity.extend({
 
         this.bombs = [];
         this.setBombsListener();
-    },
+    }
 
-    setBombsListener: function() {
+    setBombsListener() {
         // Subscribe to bombs spawning
         if (!(this instanceof Bot)) {
             var that = this;
@@ -119,9 +119,9 @@ Player = Entity.extend({
                 }
             });
         }
-    },
+    }
 
-    update: function() {
+    update() {
         if (!this.alive) {
             //this.fade();
             return;
@@ -183,13 +183,13 @@ Player = Entity.extend({
         }
 
         this.handlePowerUpCollision();
-    },
+    }
 
     /**
      * Checks whether we are on corner to target position.
      * Returns position where we should move before we can go to target.
      */
-    getCornerFix: function(dirX, dirY) {
+    getCornerFix(dirX, dirY) {
         var edgeSize = 30;
 
         // fix position to where we should go first
@@ -226,19 +226,19 @@ Player = Entity.extend({
         if (position.x &&  gGameEngine.getTileMaterial(position) === TILE_FLOOR) {
             return Utils.convertToBitmapPosition(position);
         }
-    },
+    }
 
     /**
      * Calculates and updates entity position according to its actual bitmap position
      */
-    updatePosition: function() {
+    updatePosition() {
         this.position = Utils.convertToEntityPosition(this.bmp);
-    },
+    }
 
     /**
      * Returns true when collision is detected, and we should not move to target position.
      */
-    detectWallCollision: function(position) {
+    detectWallCollision(position) {
         var player = {};
         player.left = position.x;
         player.top = position.y;
@@ -264,12 +264,12 @@ Player = Entity.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Returns true when the bomb collision is detected, and we should not move to target position.
      */
-    detectBombCollision: function(pixels) {
+    detectBombCollision(pixels) {
         var position = Utils.convertToEntityPosition(pixels);
 
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
@@ -291,9 +291,9 @@ Player = Entity.extend({
         }
 
         return false;
-    },
+    }
 
-    detectFireCollision: function() {
+    detectFireCollision() {
         var bombs = gGameEngine.bombs;
         for (var i = 0; i < bombs.length; i++) {
             var bomb = bombs[i];
@@ -306,12 +306,12 @@ Player = Entity.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Checks whether we have got bonus and applies it.
      */
-    handlePowerUpCollision: function() {
+    handlePowerUpCollision() {
         for (var i = 0; i < gGameEngine.powerUps.length; i++) {
             var powerUp = gGameEngine.powerUps[i];
             if (Utils.comparePositions(powerUp.position, this.position)) {
@@ -319,12 +319,12 @@ Player = Entity.extend({
                 powerUp.destroy();
             }
         }
-    },
+    }
 
     /**
      * Applies power-up.
      */
-    applyPowerUp: function(powerUp) {
+    applyPowerUp(powerUp) {
         if (powerUp.type === POWER_UP_SPEED) {
             this.velocity += 0.8;
         } else if (powerUp.type === POWER_UP_BOMB) {
@@ -332,18 +332,18 @@ Player = Entity.extend({
         } else if (powerUp.type === POWER_UP_FIRE) {
             this.bombStrength++;
         }
-    },
+    }
 
     /**
      * Changes animation if requested animation is not already current.
      */
-    animate: function(animation) {
+    animate(animation) {
         if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
             this.bmp.gotoAndPlay(animation);
         }
-    },
+    }
 
-    die: function() {
+    die() {
         this.alive = false;
 
         if (gGameEngine.countPlayersAlive() == 1 && gGameEngine.playersCount == 2) {
@@ -354,9 +354,9 @@ Player = Entity.extend({
 
         this.bmp.gotoAndPlay('dead');
         this.fade();
-    },
+    }
 
-    fade: function() {
+    fade() {
         var timer = 0;
         var bmp = this.bmp;
         var fade = setInterval(function() {
@@ -371,4 +371,4 @@ Player = Entity.extend({
 
         }, 30);
     }
-});
+}
