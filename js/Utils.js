@@ -4,7 +4,7 @@ var Utils = {};
  * Returns true if positions are equal.
  */
 Utils.comparePositions = function(pos1, pos2) {
-    return pos1.x == pos2.x && pos1.y == pos2.y;
+    return pos1.x === pos2.x && pos1.y === pos2.y;
 };
 
 
@@ -33,7 +33,7 @@ Utils.convertToBitmapPosition = function(entity) {
  */
 Utils.removeFromArray = function(array, item) {
     for (var i = 0; i < array.length; i++) {
-        if (item == array[i]) {
+        if (item === array[i]) {
             array.splice(i, 1);
         }
     }

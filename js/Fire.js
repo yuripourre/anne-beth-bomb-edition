@@ -61,14 +61,14 @@ Fire = Entity.extend({
 
         for (var i = 0; i < this.bomb.fires.length; i++) {
             var fire = this.bomb.fires[i];
-            if (this == fire) {
+            if (this === fire) {
                 this.bomb.fires.splice(i, 1);
             }
         }
 
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
-            if (this.bomb == bomb) {
+            if (this.bomb === bomb) {
                 gGameEngine.bombs.splice(i, 1);
             }
         }

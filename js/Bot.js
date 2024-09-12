@@ -58,7 +58,7 @@ Bot = Player.extend({
             this.wait = true;
         }
 
-        if (this.targetBitmapPosition.x == this.bmp.x && this.targetBitmapPosition.y == this.bmp.y) {
+        if (this.targetBitmapPosition.x === this.bmp.x && this.targetBitmapPosition.y === this.bmp.y) {
 
             // If we bumped into the wood, burn it!
             // If we are near player, kill it!
@@ -104,7 +104,7 @@ Bot = Player.extend({
             var previousPosition = this.getPreviousPosition();
             for (var i = 0; i < targets.length; i++) {
                 var item = targets[i];
-                if (item.x == previousPosition.x && item.y == previousPosition.y) {
+                if (item.x === previousPosition.x && item.y === previousPosition.y) {
                     targets.splice(i, 1);
                 }
             }
@@ -148,13 +148,13 @@ Bot = Player.extend({
         for (var i = 0; i < 4; i++) {
             var dirX;
             var dirY;
-            if (i == 0) { dirX = 1; dirY = 0; }
-            else if (i == 1) { dirX = -1; dirY = 0; }
-            else if (i == 2) { dirX = 0; dirY = 1; }
-            else if (i == 3) { dirX = 0; dirY = -1; }
+            if (i === 0) { dirX = 1; dirY = 0; }
+            else if (i === 1) { dirX = -1; dirY = 0; }
+            else if (i === 2) { dirX = 0; dirY = 1; }
+            else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) == 'grass' && !this.hasBomb(position)) {
+            if (gGameEngine.getTileMaterial(position) === 'grass' && !this.hasBomb(position)) {
                 targets.push(position);
             }
         }
@@ -177,13 +177,13 @@ Bot = Player.extend({
     loadTargetPosition: function(position) {
         this.dirX = position.x - this.position.x;
         this.dirY = position.y - this.position.y;
-        if (this.dirX == 1 && this.dirY == 0) {
+        if (this.dirX === 1 && this.dirY === 0) {
             this.direction = 'right';
-        } else if (this.dirX == -1 && this.dirY == 0) {
+        } else if (this.dirX === -1 && this.dirY === 0) {
             this.direction = 'left';
-        } else if (this.dirX == 0 && this.dirY == 1) {
+        } else if (this.dirX === 0 && this.dirY === 1) {
             this.direction = 'down';
-        } else if (this.dirX == 0 && this.dirY == -1) {
+        } else if (this.dirX === 0 && this.dirY === -1) {
             this.direction = 'up';
         }
     },
@@ -228,7 +228,7 @@ Bot = Player.extend({
         for (var i = 0; i < bots.length; i++) {
             var bot = bots[i];
             // Remove bot
-            if (bot == this) {
+            if (bot === this) {
                 gGameEngine.bots.splice(i, 1);
             }
             if (bot.alive) {
@@ -236,7 +236,7 @@ Bot = Player.extend({
             }
         }
 
-        if (!botsAlive && gGameEngine.countPlayersAlive() == 1) {
+        if (!botsAlive && gGameEngine.countPlayersAlive() === 1) {
             gGameEngine.gameOver('win');
         }
     },
@@ -248,13 +248,13 @@ Bot = Player.extend({
         for (var i = 0; i < 4; i++) {
             var dirX;
             var dirY;
-            if (i == 0) { dirX = 1; dirY = 0; }
-            else if (i == 1) { dirX = -1; dirY = 0; }
-            else if (i == 2) { dirX = 0; dirY = 1; }
-            else if (i == 3) { dirX = 0; dirY = -1; }
+            if (i === 0) { dirX = 1; dirY = 0; }
+            else if (i === 1) { dirX = -1; dirY = 0; }
+            else if (i === 2) { dirX = 0; dirY = 1; }
+            else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) == 'wood') {
+            if (gGameEngine.getTileMaterial(position) === 'wood') {
                 return gGameEngine.getTile(position);
             }
         }
@@ -269,10 +269,10 @@ Bot = Player.extend({
         for (var i = 0; i < 4; i++) {
             var dirX;
             var dirY;
-            if (i == 0) { dirX = 1; dirY = 0; }
-            else if (i == 1) { dirX = -1; dirY = 0; }
-            else if (i == 2) { dirX = 0; dirY = 1; }
-            else if (i == 3) { dirX = 0; dirY = -1; }
+            if (i === 0) { dirX = 1; dirY = 0; }
+            else if (i === 1) { dirX = -1; dirY = 0; }
+            else if (i === 2) { dirX = 0; dirY = 1; }
+            else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
             for (var j = 0; j < gGameEngine.players.length; j++) {

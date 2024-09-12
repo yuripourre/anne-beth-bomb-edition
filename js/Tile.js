@@ -23,11 +23,11 @@ Tile = Entity.extend({
         this.material = material;
         this.position = position;
         var img;
-        if (material == 'grass') {
+        if (material === 'grass') {
             img = gGameEngine.tilesImgs.grass;
-        } else if (material == 'wall') {
+        } else if (material === 'wall') {
             img = gGameEngine.tilesImgs.wall;
-        } else if (material == 'wood') {
+        } else if (material === 'wood') {
             img = gGameEngine.tilesImgs.wood;
         }
         this.bmp = new createjs.Bitmap(img);

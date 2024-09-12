@@ -98,10 +98,10 @@ Bomb = Entity.extend({
             this.fire(position);
 
             var material = gGameEngine.getTileMaterial(position);
-            if (material == 'wood') {
+            if (material === 'wood') {
                 var tile = gGameEngine.getTile(position);
                 tile.remove();
-            } else if (material == 'grass') {
+            } else if (material === 'grass') {
                 // Explode bombs in fire
                 for (var j = 0; j < gGameEngine.bombs.length; j++) {
                     var bomb = gGameEngine.bombs[j];
@@ -126,10 +126,10 @@ Bomb = Entity.extend({
         for (var i = 0; i < 4; i++) {
             var dirX;
             var dirY;
-            if (i == 0) { dirX = 1; dirY = 0; }
-            else if (i == 1) { dirX = -1; dirY = 0; }
-            else if (i == 2) { dirX = 0; dirY = 1; }
-            else if (i == 3) { dirX = 0; dirY = -1; }
+            if (i === 0) { dirX = 1; dirY = 0; }
+            else if (i === 1) { dirX = -1; dirY = 0; }
+            else if (i === 2) { dirX = 0; dirY = 1; }
+            else if (i === 3) { dirX = 0; dirY = -1; }
 
             for (var j = 1; j <= this.strength; j++) {
                 var explode = true;
@@ -139,10 +139,10 @@ Bomb = Entity.extend({
 
 
                 var material = gGameEngine.getTileMaterial(position);
-                if (material == 'wall') { // One can not simply burn the wall
+                if (material === 'wall') { // One can not simply burn the wall
                     explode = false;
                     last = true;
-                } else if (material == 'wood') {
+                } else if (material === 'wood') {
                     explode = true;
                     last = true;
                 }
