@@ -236,7 +236,7 @@ Player = Entity.extend({
     },
 
     /**
-     * Returns true when collision is detected and we should not move to target position.
+     * Returns true when collision is detected, and we should not move to target position.
      */
     detectWallCollision: function(position) {
         var player = {};
@@ -251,12 +251,15 @@ Player = Entity.extend({
             var tilePosition = tiles[i].position;
 
             var tile = {};
-            tile.left = tilePosition.x * gGameEngine.tileSize + 25;
-            tile.top = tilePosition.y * gGameEngine.tileSize + 20;
-            tile.right = tile.left + gGameEngine.tileSize - 30;
-            tile.bottom = tile.top + gGameEngine.tileSize - 30;
+            const leftBorder = 26;
+            const topBorder = 20;
 
-            if(gGameEngine.intersectRect(player, tile)) {
+            tile.left = tilePosition.x * gGameEngine.tileSize + leftBorder;
+            tile.top = tilePosition.y * gGameEngine.tileSize + topBorder;
+            tile.right = tile.left + gGameEngine.tileSize - 28;
+            tile.bottom = tile.top + gGameEngine.tileSize - 26;
+
+            if (gGameEngine.intersectRect(player, tile)) {
                 return true;
             }
         }
@@ -264,7 +267,7 @@ Player = Entity.extend({
     },
 
     /**
-     * Returns true when the bomb collision is detected and we should not move to target position.
+     * Returns true when the bomb collision is detected, and we should not move to target position.
      */
     detectBombCollision: function(pixels) {
         var position = Utils.convertToEntityPosition(pixels);
@@ -272,9 +275,9 @@ Player = Entity.extend({
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             // Compare bomb position
-            if (bomb.position.x == position.x && bomb.position.y == position.y) {
+            if (bomb.position.x === position.x && bomb.position.y === position.y) {
                 // Allow to escape from bomb that appeared on my field
-                if (bomb == this.escapeBomb) {
+                if (bomb === this.escapeBomb) {
                     return false;
                 } else {
                     return true;
