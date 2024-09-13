@@ -45,7 +45,7 @@ class Fire {
         this.bmp.x = pixels.x + 2;
         this.bmp.y = pixels.y - 5;
 
-        gGameEngine.stage.addChild(this.bmp);
+        gGameEngine.canvas.addChild(this.bmp);
     }
 
     update() {
@@ -57,7 +57,7 @@ class Fire {
             this.bomb.explodeListener = null;
         }
 
-        gGameEngine.stage.removeChild(this.bmp);
+        gGameEngine.canvas.removeChild(this.bmp);
 
         for (var i = 0; i < this.bomb.fires.length; i++) {
             var fire = this.bomb.fires[i];

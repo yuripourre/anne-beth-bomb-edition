@@ -8,7 +8,7 @@ class GameEngine {
     playersCount = 2; /* 1 - 2 */
     powerUpsPercent = 16;
 
-    stage = null;
+    canvas = null;
     menu = null;
     players = [];
     bots = [];
@@ -39,8 +39,8 @@ class GameEngine {
 
     load() {
         // Init canvas
-        this.stage = new createjs.Stage("canvas");
-        this.stage.enableMouseOver();
+        this.canvas = new createjs.Stage("canvas");
+        this.canvas.enableMouseOver();
 
         // Load assets
         var queue = new createjs.LoadQueue();
@@ -175,8 +175,8 @@ class GameEngine {
         // Menu
         gGameEngine.menu.update();
 
-        // Stage
-        gGameEngine.stage.update();
+        // Canvas
+        gGameEngine.canvas.update();
     }
 
     drawTiles() {
@@ -186,12 +186,12 @@ class GameEngine {
                     || (j % 2 === 0 && i % 2 === 0)) {
                     // Wall tiles
                     var tile = new Tile(TILE_WALL, { x: j, y: i });
-                    this.stage.addChild(tile.bmp);
+                    this.canvas.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
                     var tile = new Tile(TILE_FLOOR, { x: j, y: i });
-                    this.stage.addChild(tile.bmp);
+                    this.canvas.addChild(tile.bmp);
 
                     // Wood tiles
                     if (!(i <= 2 && j <= 2)
@@ -200,7 +200,7 @@ class GameEngine {
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
                         var wood = new Tile(TILE_BLOCK, { x: j, y: i });
-                        this.stage.addChild(wood.bmp);
+                        this.canvas.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
                 }
@@ -351,7 +351,7 @@ class GameEngine {
 
     restart() {
         gInputEngine.removeAllListeners();
-        gGameEngine.stage.removeAllChildren();
+        gGameEngine.canvas.removeAllChildren();
         gGameEngine.setup();
     }
 
@@ -359,8 +359,8 @@ class GameEngine {
      * Moves specified child to the front.
      */
     moveToFront(child) {
-        var children = gGameEngine.stage.numChildren;
-        gGameEngine.stage.setChildIndex(child, children - 1);
+        var children = gGameEngine.canvas.numChildren;
+        gGameEngine.canvas.setChildIndex(child, children - 1);
     }
 
     toggleSound() {

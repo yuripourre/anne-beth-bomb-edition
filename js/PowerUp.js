@@ -21,11 +21,11 @@ class PowerUp {
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
         this.bmp.sourceRect = new createjs.Rectangle(typePosition * tileSize, 0, tileSize, tileSize);
-        gGameEngine.stage.addChild(this.bmp);
+        gGameEngine.canvas.addChild(this.bmp);
     }
 
     destroy() {
-        gGameEngine.stage.removeChild(this.bmp);
+        gGameEngine.canvas.removeChild(this.bmp);
         Utils.removeFromArray(gGameEngine.powerUps, this);
     }
 }

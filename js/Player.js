@@ -81,7 +81,7 @@ class Player {
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
 
-        gGameEngine.stage.addChild(this.bmp);
+        gGameEngine.canvas.addChild(this.bmp);
 
         this.bombs = [];
         this.setBombsListener();
@@ -109,7 +109,7 @@ class Player {
 
                 if (unexplodedBombs < that.bombsMax) {
                     var bomb = new Bomb(that.position, that.bombStrength);
-                    gGameEngine.stage.addChild(bomb.bmp);
+                    gGameEngine.canvas.addChild(bomb.bmp);
                     that.bombs.push(bomb);
                     gGameEngine.bombs.push(bomb);
 

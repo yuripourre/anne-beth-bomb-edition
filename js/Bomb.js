@@ -166,7 +166,7 @@ class Bomb {
     }
 
     remove() {
-        gGameEngine.stage.removeChild(this.bmp);
+        gGameEngine.canvas.removeChild(this.bmp);
     }
 
     setExplodeListener(listener) {

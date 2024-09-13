@@ -303,7 +303,7 @@ class Bot extends Player {
 
         if (this.bombs.length < this.bombsMax) {
             var bomb = new Bomb(this.position, this.bombStrength);
-            gGameEngine.stage.addChild(bomb.bmp);
+            gGameEngine.canvas.addChild(bomb.bmp);
             this.bombs.push(bomb);
             gGameEngine.bombs.push(bomb);
 

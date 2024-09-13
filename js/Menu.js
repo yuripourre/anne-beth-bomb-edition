@@ -20,7 +20,7 @@ class Menu {
         this.visible = false;
 
         for (var i = 0; i < this.views.length; i++) {
-            gGameEngine.stage.removeChild(this.views[i]);
+            gGameEngine.canvas.removeChild(this.views[i]);
         }
 
         this.views = [];
@@ -64,7 +64,7 @@ class Menu {
         // semi-transparent black background
         var bgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
-        gGameEngine.stage.addChild(bg);
+        gGameEngine.canvas.addChild(bg);
         this.views.push(bg);
 
         // game title
@@ -77,12 +77,12 @@ class Menu {
 
         title1.x = gGameEngine.size.w / 2 - titleWidth / 2;
         title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
-        gGameEngine.stage.addChild(title1);
+        gGameEngine.canvas.addChild(title1);
         this.views.push(title1);
 
         title2.x = title1.x + title1.getMeasuredWidth();
         title2.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
-        gGameEngine.stage.addChild(title2);
+        gGameEngine.canvas.addChild(title2);
         this.views.push(title2);
 
         // modes buttons
@@ -94,7 +94,7 @@ class Menu {
         var singleX = gGameEngine.size.w / 2 - modeSize - modesDistance;
         var singleBgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(singleX, modesY, modeSize, modeSize);
         var singleBg = new createjs.Shape(singleBgGraphics);
-        gGameEngine.stage.addChild(singleBg);
+        gGameEngine.canvas.addChild(singleBg);
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
@@ -108,12 +108,12 @@ class Menu {
 
         singleTitle1.x = singleX + (modeSize - singleTitleWidth) / 2;
         singleTitle1.y = modeTitlesY;
-        gGameEngine.stage.addChild(singleTitle1);
+        gGameEngine.canvas.addChild(singleTitle1);
         this.views.push(singleTitle1)
 
         singleTitle2.x = singleTitle1.x + singleTitle1.getMeasuredWidth();
         singleTitle2.y = modeTitlesY;
-        gGameEngine.stage.addChild(singleTitle2);
+        gGameEngine.canvas.addChild(singleTitle2);
         this.views.push(singleTitle2)
 
         var iconsY = modesY + 13;
@@ -121,14 +121,14 @@ class Menu {
         singleIcon.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         singleIcon.x = singleX + (modeSize - 48) / 2;
         singleIcon.y = iconsY;
-        gGameEngine.stage.addChild(singleIcon);
+        gGameEngine.canvas.addChild(singleIcon);
         this.views.push(singleIcon);
 
         // multiplayer button
         var multiX = gGameEngine.size.w / 2 + modesDistance;
         var multiBgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(multiX, modesY, modeSize, modeSize);
         var multiBg = new createjs.Shape(multiBgGraphics);
-        gGameEngine.stage.addChild(multiBg);
+        gGameEngine.canvas.addChild(multiBg);
         this.views.push(multiBg);
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
@@ -141,38 +141,38 @@ class Menu {
 
         multiTitle1.x = multiX + (modeSize - multiTitleWidth) / 2;
         multiTitle1.y = modeTitlesY;
-        gGameEngine.stage.addChild(multiTitle1);
+        gGameEngine.canvas.addChild(multiTitle1);
         this.views.push(multiTitle1)
 
         multiTitle2.x = multiTitle1.x + multiTitle1.getMeasuredWidth();
         multiTitle2.y = modeTitlesY;
-        gGameEngine.stage.addChild(multiTitle2);
+        gGameEngine.canvas.addChild(multiTitle2);
         this.views.push(multiTitle2)
 
         var multiIconGirl = new createjs.Bitmap("static/img/betty.png");
         multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         multiIconGirl.x = multiX + (modeSize - 48) / 2 - 48/2 + 8;
         multiIconGirl.y = iconsY;
-        gGameEngine.stage.addChild(multiIconGirl);
+        gGameEngine.canvas.addChild(multiIconGirl);
         this.views.push(multiIconGirl);
 
         var multiIconBoy = new createjs.Bitmap("static/img/betty2.png");
         multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
         multiIconBoy.x = multiX + (modeSize - 48) / 2 + 48/2 - 8;
         multiIconBoy.y = iconsY;
-        gGameEngine.stage.addChild(multiIconBoy);
+        gGameEngine.canvas.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
     }
 
     showLoader() {
         var bgGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
-        gGameEngine.stage.addChild(bg);
+        gGameEngine.canvas.addChild(bg);
 
         var loadingText = new createjs.Text("Loading...", "20px Helvetica", "#FFFFFF");
         loadingText.x = gGameEngine.size.w / 2 - loadingText.getMeasuredWidth() / 2;
         loadingText.y = gGameEngine.size.h / 2 - loadingText.getMeasuredHeight() / 2;
-        gGameEngine.stage.addChild(loadingText);
-        gGameEngine.stage.update();
+        gGameEngine.canvas.addChild(loadingText);
+        gGameEngine.canvas.update();
     }
 }

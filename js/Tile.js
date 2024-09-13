@@ -47,7 +47,7 @@ class Tile {
     }
 
     remove() {
-        gGameEngine.stage.removeChild(this.bmp);
+        gGameEngine.canvas.removeChild(this.bmp);
         for (var i = 0; i < gGameEngine.tiles.length; i++) {
             var tile = gGameEngine.tiles[i];
             if (this === tile) {
