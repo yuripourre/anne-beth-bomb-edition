@@ -1,7 +1,20 @@
+MODE_SINGLE = 'single';
+MODE_MULTI = 'multi'
+
 class Menu {
+    mode = MODE_SINGLE;
+    modeIndex = 0;
+    modes = [MODE_SINGLE, MODE_MULTI];
+
     visible = true;
 
     views = [];
+
+    singleBgFillCommand = null;
+    multiBgFillCommand = null;
+
+    nextPressed = false;
+    prevPressed = false;
 
     constructor() {
         gGameEngine.botsCount = 4;
@@ -31,7 +44,46 @@ class Menu {
             for (var i = 0; i < this.views.length; i++) {
                 gGameEngine.moveToFront(this.views[i]);
             }
+
+            if (gInputEngine.actions['bomb']) {
+                this.setMode(this.mode);
+                this.nextPressed = true;
+            }
+            // Throttling
+            if (this.nextPressed) {
+                if (!gInputEngine.actions['right']) {
+                    // Release the button
+                    this.nextPressed = false;
+                }
+            } else if (gInputEngine.actions['right']) {
+                this.nextPressed = true;
+                this.nextOption();
+            }
+
+            if (this.prevPressed) {
+                if (!gInputEngine.actions['left']) {
+                    // Release the button
+                    this.prevPressed = false;
+                }
+            } else if (gInputEngine.actions['left']) {
+                this.prevPressed = true;
+                this.prevOption();
+            }
         }
+    }
+
+    nextOption() {
+        this.modeIndex++;
+        this.modeIndex %= this.modes.length;
+        this.mode = this.modes[this.modeIndex];
+        this.updateModes();
+    }
+
+    prevOption() {
+        this.modeIndex += this.modes.length + 1;
+        this.modeIndex %= this.modes.length;
+        this.mode = this.modes[this.modeIndex];
+        this.updateModes();
     }
 
     setHandCursor(btn) {
@@ -46,7 +98,7 @@ class Menu {
     setMode(mode) {
         this.hide();
 
-        if (mode === 'single') {
+        if (mode === MODE_SINGLE) {
             gGameEngine.botsCount = 3;
             gGameEngine.playersCount = 1;
         } else {
@@ -92,13 +144,16 @@ class Menu {
 
         // singleplayer button
         var singleX = gGameEngine.size.w / 2 - modeSize - modesDistance;
-        var singleBgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(singleX, modesY, modeSize, modeSize);
+        var singleBgGraphics = new createjs.Graphics();
+        this.singleBgFillCommand = singleBgGraphics.beginFill("rgba(0, 0, 0, 0.5)").command;
+        singleBgGraphics.drawRect(singleX, modesY, modeSize, modeSize);
+
         var singleBg = new createjs.Shape(singleBgGraphics);
         gGameEngine.canvas.addChild(singleBg);
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
-            that.setMode('single');
+            that.setMode(MODE_SINGLE);
         });
 
         var singleTitle1 = new createjs.Text("single", "16px Helvetica", "#ff4444");
@@ -126,13 +181,16 @@ class Menu {
 
         // multiplayer button
         var multiX = gGameEngine.size.w / 2 + modesDistance;
-        var multiBgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(multiX, modesY, modeSize, modeSize);
+        var multiBgGraphics = new createjs.Graphics();
+        this.multiBgFillCommand = multiBgGraphics.beginFill("rgba(0, 0, 0, 0.5)").command;
+        multiBgGraphics.drawRect(multiX, modesY, modeSize, modeSize);
+
         var multiBg = new createjs.Shape(multiBgGraphics);
         gGameEngine.canvas.addChild(multiBg);
         this.views.push(multiBg);
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
-            that.setMode('multi');
+            that.setMode(MODE_MULTI);
         });
 
         var multiTitle1 = new createjs.Text("multi", "16px Helvetica", "#99cc00");
@@ -162,6 +220,8 @@ class Menu {
         multiIconBoy.y = iconsY;
         gGameEngine.canvas.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
+
+        this.updateModes();
     }
 
     showLoader() {
@@ -174,5 +234,16 @@ class Menu {
         loadingText.y = gGameEngine.size.h / 2 - loadingText.getMeasuredHeight() / 2;
         gGameEngine.canvas.addChild(loadingText);
         gGameEngine.canvas.update();
+    }
+
+    updateModes() {
+        // Change background color
+        if (this.mode === MODE_SINGLE) {
+            this.singleBgFillCommand.style = "rgba(255, 255, 255, 0.4)";
+            this.multiBgFillCommand.style = "rgba(0, 0, 0, 0.5)";
+        } else {
+            this.singleBgFillCommand.style = "rgba(0, 0, 0, 0.5)";
+            this.multiBgFillCommand.style = "rgba(255, 255, 255, 0.4)";
+        }
     }
 }
