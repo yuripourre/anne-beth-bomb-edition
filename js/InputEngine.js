@@ -1,5 +1,6 @@
 class InputEngine {
     bindings = {};
+    pressed = {};
     actions = {};
     listeners = [];
     gamepads = []; // To track multiple gamepads
@@ -102,24 +103,18 @@ class InputEngine {
 
             if (i === 0) {
                 // Handling the first gamepad
-                const threshold = 0.2;
-                const leftX = gamepad.axes[0];
-                const leftY = gamepad.axes[1];
-                this.actions['up'] = leftY < -threshold || gamepad.buttons[12].pressed;
-                this.actions['down'] = leftY > threshold || gamepad.buttons[13].pressed;
-                this.actions['left'] = leftX < -threshold || gamepad.buttons[14].pressed;
-                this.actions['right'] = leftX > threshold || gamepad.buttons[15].pressed;
-                this.actions['bomb'] = gamepad.buttons[1].pressed; // Button 1
+                this.triggerOnKeyDown('up', gamepad.buttons[12].pressed);
+                this.triggerOnKeyDown('down', gamepad.buttons[13].pressed);
+                this.triggerOnKeyDown('left', gamepad.buttons[14].pressed);
+                this.triggerOnKeyDown('right', gamepad.buttons[15].pressed);
+                this.triggerOnKeyUp('bomb', gamepad.buttons[1].pressed);
             } else if (i === 1) {
                 // Handling the second gamepad
-                const threshold = 0.2;
-                const leftX2 = gamepad.axes[0];
-                const leftY2 = gamepad.axes[1];
-                this.actions['up2'] = leftY2 < -threshold || gamepad.buttons[12].pressed;
-                this.actions['down2'] = leftY2 > threshold || gamepad.buttons[13].pressed;
-                this.actions['left2'] = leftX2 < -threshold || gamepad.buttons[14].pressed;
-                this.actions['right2'] = leftX2 > threshold || gamepad.buttons[15].pressed;
-                this.actions['bomb2'] = gamepad.buttons[1].pressed; // Button 1
+                this.triggerOnKeyDown('up2', gamepad.buttons[12].pressed);
+                this.triggerOnKeyDown('down2', gamepad.buttons[13].pressed);
+                this.triggerOnKeyDown('left2', gamepad.buttons[14].pressed);
+                this.triggerOnKeyDown('right2', gamepad.buttons[15].pressed);
+                this.triggerOnKeyUp('bomb2', gamepad.buttons[1].pressed);
             }
 
             // Trigger listeners for joystick actions
@@ -128,6 +123,19 @@ class InputEngine {
                     this.triggerListeners(action);
                 }
             }
+        }
+    }
+
+    triggerOnKeyDown(command, pressed) {
+        this.actions[command] = pressed;
+    }
+
+    triggerOnKeyUp(command, pressed) {
+        if (pressed) {
+            this.pressed[command] = true;
+        } else {
+            this.actions[command] = this.pressed[command];
+            this.pressed[command] = false;
         }
     }
 }
