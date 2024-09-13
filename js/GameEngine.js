@@ -19,6 +19,7 @@ class GameEngine {
     currentLevel = null;
 
     playerBoyImg = null;
+    playerBoyImg2 = null;
     playerGirlImg = null;
     playerGirl2Img = null;
     bombImg = null;
@@ -53,6 +54,7 @@ class GameEngine {
 
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
+            that.playerBoy2Img = queue.getResult("playerBoy2");
             that.playerGirlImg = queue.getResult("playerGirl");
             that.playerGirl2Img = queue.getResult("playerGirl2");
             that.bombImg = queue.getResult("bomb");
@@ -72,6 +74,7 @@ class GameEngine {
 
         var manifest = [
             {id: "playerBoy", src: "static/img/george.png"},
+            {id: "playerBoy2", src: "static/img/george2.png"},
             {id: "playerGirl", src: "static/img/betty.png"},
             {id: "playerGirl2", src: "static/img/betty2.png"},
             {id: "bomb", src: "static/img/bomb.png"},
@@ -278,6 +281,7 @@ class GameEngine {
         this.bots = [];
 
         var botImg = gGameEngine.playerBoyImg;
+        var botImg2 = gGameEngine.playerBoy2Img;
 
         if (this.botsCount >= 1) {
             var bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
@@ -285,7 +289,7 @@ class GameEngine {
         }
 
         if (this.botsCount >= 2) {
-            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg);
+            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
             this.bots.push(bot3);
         }
 

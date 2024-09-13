@@ -71,7 +71,7 @@ class Player {
                 left: [4, 7, 'left', 0.1],
                 up: [8, 11, 'up', 0.1],
                 right: [12, 15, 'right', 0.1],
-                dead: [16, 16, 'dead', 0.1]
+                dead: [16, 19, 'dead', 0.1]
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);
@@ -299,7 +299,7 @@ class Player {
             var bomb = bombs[i];
             for (var j = 0; j < bomb.fires.length; j++) {
                 var fire = bomb.fires[j];
-                var collision = bomb.exploded && fire.position.x == this.position.x && fire.position.y == this.position.y;
+                var collision = bomb.exploded && fire.position.x === this.position.x && fire.position.y === this.position.y;
                 if (collision) {
                     return true;
                 }
@@ -346,13 +346,15 @@ class Player {
     die() {
         this.alive = false;
 
-        if (gGameEngine.countPlayersAlive() == 1 && gGameEngine.playersCount == 2) {
+        if (gGameEngine.countPlayersAlive() === 1 && gGameEngine.playersCount === 2) {
             gGameEngine.gameOver('win');
-        } else if (gGameEngine.countPlayersAlive() == 0) {
+        } else if (gGameEngine.countPlayersAlive() === 0) {
             gGameEngine.gameOver('lose');
         }
 
+        // Start dead animation
         this.bmp.gotoAndPlay('dead');
+        // Hides the image after some time
         this.fade();
     }
 
@@ -362,13 +364,10 @@ class Player {
         var fade = setInterval(function() {
             timer++;
 
-            if (timer > 30) {
-                bmp.alpha -= 0.05;
-            }
-            if (bmp.alpha <= 0) {
+            if (timer > 20) {
+                bmp.alpha = 0;
                 clearInterval(fade);
             }
-
         }, 30);
     }
 }
