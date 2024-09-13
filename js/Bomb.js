@@ -50,7 +50,7 @@ class Bomb {
                 regY: 5
             },
             animations: {
-                idle: [0, 4, "idle", 0.2]
+                idle: [0, 4, "idle", 0.15]
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);
