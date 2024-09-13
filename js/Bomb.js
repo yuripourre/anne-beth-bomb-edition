@@ -110,6 +110,13 @@ class Bomb {
                         bomb.explode();
                     }
                 }
+                // Destroy Power-Ups
+                for (var j = 0; j < gGameEngine.powerUps.length; j++) {
+                    var powerUp = gGameEngine.powerUps[j];
+                    if (Utils.comparePositions(powerUp.position, position)) {
+                        powerUp.destroy();
+                    }
+                }
             }
         }
 
