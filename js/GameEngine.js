@@ -15,11 +15,12 @@ class GameEngine {
     tiles = [];
     bombs = [];
     powerUps = [];
+    levels = [];
+    currentLevel = null;
 
     playerBoyImg = null;
     playerGirlImg = null;
     playerGirl2Img = null;
-    tilesImgs = {};
     bombImg = null;
     fireImg = null;
     powerUpsImg = null;
@@ -46,30 +47,48 @@ class GameEngine {
         var queue = new createjs.LoadQueue();
         var that = this;
 
+        // Define levels
+        this.levels.push(new Level("default", "static/img/levels/default/tile_wood.png", "static/img/levels/default/tile_grass.png", "static/img/levels/default/tile_wall.png"));
+        this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
+
         queue.addEventListener("complete", function() {
             that.playerBoyImg = queue.getResult("playerBoy");
             that.playerGirlImg = queue.getResult("playerGirl");
             that.playerGirl2Img = queue.getResult("playerGirl2");
-            that.tilesImgs.grass = queue.getResult("tile_grass");
-            that.tilesImgs.wall = queue.getResult("tile_wall");
-            that.tilesImgs.wood = queue.getResult("tile_wood");
             that.bombImg = queue.getResult("bomb");
             that.fireImg = queue.getResult("fire");
             that.powerUpsImg = queue.getResult("powerups");
+
+            // Load levels
+            for (var l = 0; l < that.levels.length; l++) {
+                var level = that.levels[l];
+                level.blockImg = queue.getResult(`${level.name}_tile_block`);
+                level.floorImg = queue.getResult(`${level.name}_tile_floor`);
+                level.wallImg = queue.getResult(`${level.name}_tile_wall`);
+            }
+
             that.setup();
         });
 
-        queue.loadManifest([
+        var manifest = [
             {id: "playerBoy", src: "static/img/george.png"},
             {id: "playerGirl", src: "static/img/betty.png"},
             {id: "playerGirl2", src: "static/img/betty2.png"},
-            {id: "tile_grass", src: "static/img/tile_grass.png"},
-            {id: "tile_wall", src: "static/img/tile_wall.png"},
-            {id: "tile_wood", src: "static/img/tile_wood.png"},
             {id: "bomb", src: "static/img/bomb.png"},
             {id: "fire", src: "static/img/fire.png"},
             {id: "powerups", src: "static/img/powerups.png"}
-        ]);
+        ];
+
+        // Add level images to manifest
+        for (var l = 0; l < that.levels.length; l++) {
+            var level = that.levels[l];
+
+            manifest.push({id: `${level.name}_tile_block`, src: level.blockFile});
+            manifest.push({id: `${level.name}_tile_floor`, src: level.floorFile});
+            manifest.push({id: `${level.name}_tile_wall`, src: level.wallFile});
+        }
+
+        queue.loadManifest(manifest);
 
         createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
         createjs.Sound.alternateExtensions = ["mp3"];
@@ -88,6 +107,10 @@ class GameEngine {
         this.bombs = [];
         this.tiles = [];
         this.powerUps = [];
+
+        // Get a random level
+        var levelIndex = Math.floor(Math.random() * this.levels.length);
+        this.currentLevel = this.levels[levelIndex];
 
         // Draw tiles
         this.drawTiles();
@@ -395,6 +418,18 @@ class GameEngine {
         }
 
         return players;
+    }
+
+    getLevelBlockImage() {
+        return this.currentLevel.blockImg;
+    }
+
+    getLevelFloorImage() {
+        return this.currentLevel.floorImg;
+    }
+
+    getLevelWallImage() {
+        return this.currentLevel.wallImg;
     }
 }
 

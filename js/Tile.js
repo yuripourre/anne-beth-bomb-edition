@@ -31,11 +31,11 @@ class Tile {
         this.position = position;
         var img;
         if (material === TILE_FLOOR) {
-            img = gGameEngine.tilesImgs.grass;
+            img = gGameEngine.getLevelFloorImage();
         } else if (material === TILE_WALL) {
-            img = gGameEngine.tilesImgs.wall;
+            img = gGameEngine.getLevelWallImage();
         } else if (material === TILE_BLOCK) {
-            img = gGameEngine.tilesImgs.wood;
+            img = gGameEngine.getLevelBlockImage();
         }
         this.bmp = new createjs.Bitmap(img);
         var pixels = Utils.convertToBitmapPosition(position);
