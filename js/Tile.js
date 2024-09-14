@@ -43,11 +43,11 @@ class Tile {
         this.bmp.y = pixels.y;
 
         if (material === TILE_FLOOR) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
         } else if (material === TILE_WALL) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
         } else if (material === TILE_BLOCK) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
         }
     }
 

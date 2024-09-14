@@ -1,7 +1,7 @@
 class GameEngine {
     tileSize = 32;
-    tilesX = 17;
-    tilesY = 13;
+    tilesX = 13;
+    tilesY = 11;
     size = {};
     fps = 50;
     botsCount = 2; /* 0 - 3 */
@@ -49,7 +49,8 @@ class GameEngine {
         var that = this;
 
         // Define levels
-        this.levels.push(new Level("default", "static/img/levels/default/tile_wood.png", "static/img/levels/default/tile_grass.png", "static/img/levels/default/tile_wall.png"));
+        //this.levels.push(new Level("classic", "static/img/levels/classic/block.png", "static/img/levels/classic/grass.png", "static/img/levels/classic/wall.png"));
+        this.levels.push(new Level("original", "static/img/levels/original/tile_wood.png", "static/img/levels/original/tile_grass.png", "static/img/levels/original/tile_wall.png"));
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
 
         queue.addEventListener("complete", function() {
@@ -73,10 +74,10 @@ class GameEngine {
         });
 
         var manifest = [
-            {id: "playerBoy", src: "static/img/george.png"},
-            {id: "playerBoy2", src: "static/img/george2.png"},
-            {id: "playerGirl", src: "static/img/betty.png"},
-            {id: "playerGirl2", src: "static/img/betty2.png"},
+            {id: "playerBoy", src: "static/img/chars/skull.png"},
+            {id: "playerBoy2", src: "static/img/chars/skull.png"},
+            {id: "playerGirl", src: "static/img/chars/witch.png"},
+            {id: "playerGirl2", src: "static/img/chars/princess.png"},
             {id: "bomb", src: "static/img/bomb.png"},
             {id: "fire", src: "static/img/fire.png"},
             {id: "powerups", src: "static/img/powerups.png"}

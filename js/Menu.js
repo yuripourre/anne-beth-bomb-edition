@@ -171,10 +171,10 @@ class Menu {
         gGameEngine.canvas.addChild(singleTitle2);
         this.views.push(singleTitle2)
 
-        var iconsY = modesY + 13;
-        var singleIcon = new createjs.Bitmap("static/img/betty.png");
-        singleIcon.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        singleIcon.x = singleX + (modeSize - 48) / 2;
+        var iconsY = modesY + 23;
+        var singleIcon = new createjs.Bitmap("static/img/chars/witch.png");
+        singleIcon.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        singleIcon.x = singleX + (modeSize - 32) / 2;
         singleIcon.y = iconsY;
         gGameEngine.canvas.addChild(singleIcon);
         this.views.push(singleIcon);
@@ -207,16 +207,16 @@ class Menu {
         gGameEngine.canvas.addChild(multiTitle2);
         this.views.push(multiTitle2)
 
-        var multiIconGirl = new createjs.Bitmap("static/img/betty.png");
-        multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        multiIconGirl.x = multiX + (modeSize - 48) / 2 - 48/2 + 8;
+        var multiIconGirl = new createjs.Bitmap("static/img/chars/witch.png");
+        multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconGirl.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
         multiIconGirl.y = iconsY;
         gGameEngine.canvas.addChild(multiIconGirl);
         this.views.push(multiIconGirl);
 
-        var multiIconBoy = new createjs.Bitmap("static/img/betty2.png");
-        multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        multiIconBoy.x = multiX + (modeSize - 48) / 2 + 48/2 - 8;
+        var multiIconBoy = new createjs.Bitmap("static/img/chars/princess.png");
+        multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconBoy.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
         multiIconBoy.y = iconsY;
         gGameEngine.canvas.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
