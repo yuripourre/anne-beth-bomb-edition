@@ -1,4 +1,8 @@
 export class InputEngine {
+
+    // Must reflect the name in index.html
+    static CANVAS_ID = "game-canvas";
+
     bindings = {};
     pressed = {};
     actions = {};
@@ -27,8 +31,9 @@ export class InputEngine {
         this.bind(27, 'escape');
         this.bind(77, 'mute');
 
-        document.addEventListener('keydown', this.onKeyDown.bind(this));
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        // This is needed to work inside itch.io
+        window.addEventListener('keydown', this.onKeyDown.bind(this));
+        window.addEventListener('keyup', this.onKeyUp.bind(this));
 
         // Joystick support for two gamepads
         window.addEventListener("gamepadconnected", (event) => {

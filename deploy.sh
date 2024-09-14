@@ -9,10 +9,13 @@ npm run prod
 # Copy assets to the dist folder
 echo "Copying assets..."
 mkdir -p dist
-cp -a $ASSETS_FOLDER dist/$ASSETS_FOLDER
+cp -a $ASSETS_FOLDER dist/main/$ASSETS_FOLDER
 
-# Ignore editor folder
-rm -rf dist/assets/$ASSETS_FOLDER/editor
+# We need to replace the paths to be relative otherwise itch.io cannot load them
+cd dist/main
+sed -i 's| src="/| src="./|g' "index.html"
+sed -i 's| href="/| href="./|g' "index.html"
+cd -
 
 echo "Deploying artifact to itch.io..."
 # Create butler folder
@@ -33,4 +36,4 @@ else
   echo "Found butler..."
 fi
 # Publish to Itch.io
-./butler/butler push dist $ITCH_USER/$APP_NAME:html
+./butler/butler push dist/main $ITCH_USER/$APP_NAME:html

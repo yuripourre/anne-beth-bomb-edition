@@ -8,8 +8,8 @@ import {PowerUp} from "./PowerUp.js";
 
 export class GameEngine {
     tileSize = 32;
-    tilesX = 17;
-    tilesY = 13;
+    tilesX = 19;
+    tilesY = 11;
     size = {};
     fps = 50;
     botsCount = 2; /* 0 - 3 */
@@ -49,7 +49,7 @@ export class GameEngine {
 
     load() {
         // Init canvas
-        this.canvas = new createjs.Stage("canvas");
+        this.canvas = new createjs.Stage("game-canvas");
         this.canvas.enableMouseOver();
 
         // Load assets

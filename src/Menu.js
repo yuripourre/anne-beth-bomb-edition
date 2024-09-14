@@ -123,20 +123,24 @@ export class Menu {
         this.views.push(bg);
 
         // game title
-        text = text || [{text: 'Bomber', color: '#ffffff'}, {text: 'girl', color: '#ff4444'}];
+        const title = {text: 'Anne Beth', color: '#ffffff'};
+        const subtext = {text: 'Bomb Edition', color: '#ff4444'};
 
-        var title1 = new createjs.Text(text[0].text, "bold 35px Helvetica", text[0].color);
-        var title2 = new createjs.Text(text[1].text, "bold 35px Helvetica", text[1].color);
+        var title1 = new createjs.Text(title.text, "bold 40px Helvetica", title.color);
+        var title2 = new createjs.Text(subtext.text, "bold 22px Helvetica", subtext.color);
 
-        var titleWidth = title1.getMeasuredWidth() + title2.getMeasuredWidth();
+        var titleWidth = title1.getMeasuredWidth();
+        var subTitleWidth = title2.getMeasuredWidth();
+
+        var offset = 90;
 
         title1.x = gGameEngine.size.w / 2 - titleWidth / 2;
-        title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
+        title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - offset;
         gGameEngine.canvas.addChild(title1);
         this.views.push(title1);
 
-        title2.x = title1.x + title1.getMeasuredWidth();
-        title2.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
+        title2.x = gGameEngine.size.w / 2 - subTitleWidth / 2;
+        title2.y = gGameEngine.size.h / 2 - title2.getMeasuredHeight() / 2 - (offset - 30);
         gGameEngine.canvas.addChild(title2);
         this.views.push(title2);
 

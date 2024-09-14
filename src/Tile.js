@@ -49,9 +49,9 @@ export class Tile {
         if (material === Tile.TILE_FLOOR) {
             this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
         } else if (material === Tile.TILE_WALL) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize + 4);
         } else if (material === Tile.TILE_BLOCK) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize + 4);
         }
     }
 
