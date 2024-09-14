@@ -268,12 +268,14 @@ class GameEngine {
                     var powerUp = new PowerUp(tile.position, typePosition);
                     this.powerUps.push(powerUp);
 
-                    // Move wood to front
-                    this.moveToFront(tile.bmp);
-
                     placedCount++;
                 }
             }
+        }
+        // Move all tiles to front
+        for (var i = this.tilesX; i < this.tiles.length; i++) {
+            var tile = this.tiles[i];
+            this.moveToFront(tile.bmp);
         }
     }
 

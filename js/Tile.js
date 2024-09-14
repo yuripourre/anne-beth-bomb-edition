@@ -41,6 +41,14 @@ class Tile {
         var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
+
+        if (material === TILE_FLOOR) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        } else if (material === TILE_WALL) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
+        } else if (material === TILE_BLOCK) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
+        }
     }
 
     update() {
