@@ -1,12 +1,19 @@
 {
   "name": "html5-bomberman",
   "version": "0.1.0",
+  "targets": {
+    "main": {
+      "includeNodeModules": true
+    }
+  },
   "scripts": {
     "dev": "parcel build index.html && live-server",
-    "start": "parcel build index.html && live-server"
+    "start": "parcel index.html --open",
+    "prod": "rm -rf dist/* .parcel-cache/* && parcel build index.html"
   },
   "dependencies": {
     "bootstrap": "^3.1.1",
+    "createjs-module": "^0.8.3",
     "easeljs": "^1.0.1",
     "preloadjs": "^1.0.1",
     "soundjs": "^1.0.1"

@@ -1,9 +1,13 @@
-POWER_UP_BOMB = 'bomb';
-POWER_UP_FIRE = 'fire';
-POWER_UP_SPEED = 'speed';
+import {gGameEngine} from "./GameEngine.js";
+import {Utils} from "./Utils.js";
 
-class PowerUp {
-    types = [POWER_UP_SPEED, POWER_UP_BOMB, POWER_UP_FIRE];
+export class PowerUp {
+
+    static POWER_UP_BOMB = 'bomb';
+    static POWER_UP_FIRE = 'fire';
+    static POWER_UP_SPEED = 'speed';
+
+    types = [PowerUp.POWER_UP_SPEED, PowerUp.POWER_UP_BOMB, PowerUp.POWER_UP_FIRE];
 
     type = '';
     position = {};

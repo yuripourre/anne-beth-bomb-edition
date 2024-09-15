@@ -1,7 +1,15 @@
-class GameEngine {
+import {Tile} from "./Tile.js";
+import {Level} from "./Level.js";
+import {gInputEngine} from "./InputEngine.js";
+import {Bot} from "./Bot.js";
+import {Player} from "./Player.js";
+import {Menu} from "./Menu.js";
+import {PowerUp} from "./PowerUp.js";
+
+export class GameEngine {
     tileSize = 32;
     tilesX = 17;
-    tilesY = 13;
+    tilesY = 11;
     size = {};
     fps = 50;
     botsCount = 2; /* 0 - 3 */
@@ -41,15 +49,18 @@ class GameEngine {
 
     load() {
         // Init canvas
-        this.canvas = new createjs.Stage("canvas");
+        this.canvas = new createjs.Stage("game-canvas");
         this.canvas.enableMouseOver();
+        // Prevent default on mouse click (necessary if canvas is inside an iframe)
+        this.canvas.preventSelection = false;
 
         // Load assets
         var queue = new createjs.LoadQueue();
         var that = this;
 
         // Define levels
-        this.levels.push(new Level("default", "static/img/levels/default/tile_wood.png", "static/img/levels/default/tile_grass.png", "static/img/levels/default/tile_wall.png"));
+        //this.levels.push(new Level("classic", "static/img/levels/classic/block.png", "static/img/levels/classic/grass.png", "static/img/levels/classic/wall.png"));
+        this.levels.push(new Level("original", "static/img/levels/original/tile_wood.png", "static/img/levels/original/tile_grass.png", "static/img/levels/original/tile_wall.png"));
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
 
         queue.addEventListener("complete", function() {
@@ -73,10 +84,10 @@ class GameEngine {
         });
 
         var manifest = [
-            {id: "playerBoy", src: "static/img/george.png"},
-            {id: "playerBoy2", src: "static/img/george2.png"},
-            {id: "playerGirl", src: "static/img/betty.png"},
-            {id: "playerGirl2", src: "static/img/betty2.png"},
+            {id: "playerBoy", src: "static/img/chars/skull.png"},
+            {id: "playerBoy2", src: "static/img/chars/skull.png"},
+            {id: "playerGirl", src: "static/img/chars/witch.png"},
+            {id: "playerGirl2", src: "static/img/chars/princess.png"},
             {id: "bomb", src: "static/img/bomb.png"},
             {id: "fire", src: "static/img/fire.png"},
             {id: "powerups", src: "static/img/powerups.png"}
@@ -173,7 +184,7 @@ class GameEngine {
 
     playSoundtrack() {
         if (!gGameEngine.soundtrackPlaying) {
-            gGameEngine.soundtrack = createjs.Sound.play("game", "none", 0, 0, -1);
+            gGameEngine.soundtrack = createjs.Sound.play("game", {loop: -1});
             gGameEngine.soundtrack.volume = 1;
             gGameEngine.soundtrackPlaying = true;
         }
@@ -211,12 +222,12 @@ class GameEngine {
                 if ((i === 0 || j === 0 || i === this.tilesY - 1 || j === this.tilesX - 1)
                     || (j % 2 === 0 && i % 2 === 0)) {
                     // Wall tiles
-                    var tile = new Tile(TILE_WALL, { x: j, y: i });
+                    var tile = new Tile(Tile.TILE_WALL, { x: j, y: i });
                     this.canvas.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
-                    var tile = new Tile(TILE_FLOOR, { x: j, y: i });
+                    var tile = new Tile(Tile.TILE_FLOOR, { x: j, y: i });
                     this.canvas.addChild(tile.bmp);
 
                     // Wood tiles
@@ -225,7 +236,7 @@ class GameEngine {
                         && !(i <= 2 && j >= this.tilesX - 3)
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
-                        var wood = new Tile(TILE_BLOCK, { x: j, y: i });
+                        var wood = new Tile(Tile.TILE_BLOCK, { x: j, y: i });
                         this.canvas.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
@@ -239,7 +250,7 @@ class GameEngine {
         var woods = [];
         for (var i = 0; i < this.tiles.length; i++) {
             var tile = this.tiles[i];
-            if (tile.material === TILE_BLOCK) {
+            if (tile.material === Tile.TILE_BLOCK) {
                 woods.push(tile);
             }
         }
@@ -351,7 +362,7 @@ class GameEngine {
      */
     getTileMaterial(position) {
         var tile = this.getTile(position);
-        return (tile) ? tile.material : TILE_FLOOR ;
+        return (tile) ? tile.material : Tile.TILE_FLOOR;
     }
 
     gameOver(status) {
@@ -395,10 +406,12 @@ class GameEngine {
     toggleSound() {
         if (gGameEngine.mute) {
             gGameEngine.mute = false;
-            gGameEngine.soundtrack.resume();
+            gGameEngine.soundtrack.paused = false;
+            gGameEngine.soundtrack.muted = false;
         } else {
             gGameEngine.mute = true;
-            gGameEngine.soundtrack.pause();
+            gGameEngine.soundtrack.paused = true;
+            gGameEngine.soundtrack.muted = true;
         }
     }
 
@@ -439,4 +452,4 @@ class GameEngine {
     }
 }
 
-gGameEngine = new GameEngine();
+export const gGameEngine = new GameEngine();

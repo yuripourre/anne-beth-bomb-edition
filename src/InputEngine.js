@@ -1,4 +1,5 @@
-class InputEngine {
+export class InputEngine {
+
     bindings = {};
     pressed = {};
     actions = {};
@@ -23,12 +24,14 @@ class InputEngine {
         this.bind(68, 'right2');
         this.bind(16, 'bomb2');
 
-        this.bind(13, 'restart');
+        // Enter to confirm
+        this.bind(13, 'confirm');
         this.bind(27, 'escape');
         this.bind(77, 'mute');
 
-        document.addEventListener('keydown', this.onKeyDown.bind(this));
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        // This is needed to work inside itch.io
+        window.addEventListener('keydown', this.onKeyDown.bind(this));
+        window.addEventListener('keyup', this.onKeyUp.bind(this));
 
         // Joystick support for two gamepads
         window.addEventListener("gamepadconnected", (event) => {
@@ -55,7 +58,8 @@ class InputEngine {
 
     onKeyUp(event) {
         var action = this.bindings[event.keyCode];
-        if (action) {
+        // Prevents action to trigger twice
+        if (action && this.actions[action]) {
             this.actions[action] = false;
             this.triggerListeners(action);
             event.preventDefault();
@@ -108,6 +112,7 @@ class InputEngine {
                 this.triggerOnKeyDown('left', gamepad.buttons[14].pressed);
                 this.triggerOnKeyDown('right', gamepad.buttons[15].pressed);
                 this.triggerOnKeyUp('bomb', gamepad.buttons[1].pressed);
+                this.triggerOnKeyUp('confirm', gamepad.buttons[1].pressed);
             } else if (i === 1) {
                 // Handling the second gamepad
                 this.triggerOnKeyDown('up2', gamepad.buttons[12].pressed);
@@ -115,19 +120,14 @@ class InputEngine {
                 this.triggerOnKeyDown('left2', gamepad.buttons[14].pressed);
                 this.triggerOnKeyDown('right2', gamepad.buttons[15].pressed);
                 this.triggerOnKeyUp('bomb2', gamepad.buttons[1].pressed);
-            }
-
-            // Trigger listeners for joystick actions
-            for (let action in this.actions) {
-                if (this.actions[action]) {
-                    this.triggerListeners(action);
-                }
+                this.triggerOnKeyUp('confirm', gamepad.buttons[1].pressed);
             }
         }
     }
 
     triggerOnKeyDown(command, pressed) {
         this.actions[command] = pressed;
+        this.triggerListeners(command);
     }
 
     triggerOnKeyUp(command, pressed) {
@@ -136,8 +136,9 @@ class InputEngine {
         } else {
             this.actions[command] = this.pressed[command];
             this.pressed[command] = false;
+            this.triggerListeners(command);
         }
     }
 }
 
-gInputEngine = new InputEngine();
+export const gInputEngine = new InputEngine();

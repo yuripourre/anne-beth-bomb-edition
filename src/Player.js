@@ -1,4 +1,11 @@
-class Player {
+import {gGameEngine} from "./GameEngine.js";
+import {gInputEngine} from "./InputEngine.js";
+import {Utils} from "./Utils.js";
+import {PowerUp} from "./PowerUp.js";
+import {Bot} from "./Bot.js";
+import {Bomb} from "./Bomb.js";
+
+export class Player {
     id = 0;
 
     /**
@@ -25,8 +32,8 @@ class Player {
      * Bitmap dimensions
      */
     size = {
-        w: 48,
-        h: 48
+        w: 32,
+        h: 32
     };
 
     /**
@@ -62,16 +69,18 @@ class Player {
             this.controls = controls;
         }
 
+        const numFrames = 3;
+
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
-            frames: { width: this.size.w, height: this.size.h, regX: 10, regY: 12 },
+            frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
             animations: {
                 idle: [0, 0, 'idle'],
-                down: [0, 3, 'down', 0.1],
-                left: [4, 7, 'left', 0.1],
-                up: [8, 11, 'up', 0.1],
-                right: [12, 15, 'right', 0.1],
-                dead: [16, 19, 'dead', 0.1]
+                down: [0, 2, 'down', 0.1],
+                left: [3, 5, 'left', 0.1],
+                right: [6, 8, 'right', 0.1],
+                up: [9, 11, 'up', 0.1],
+                dead: [12, 15, 'dead', 0.1]
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);
@@ -123,16 +132,17 @@ class Player {
 
     update() {
         if (!this.alive) {
-            //this.fade();
             return;
         }
         if (gGameEngine.menu.visible) {
             return;
         }
-        var position = { x: this.bmp.x, y: this.bmp.y };
 
-        var dirX = 0;
-        var dirY = 0;
+        let position = { x: this.bmp.x, y: this.bmp.y };
+
+        let dirX = 0;
+        let dirY = 0;
+
         if (gInputEngine.actions[this.controls.up]) {
             this.animate('up');
             position.y -= this.velocity;
@@ -153,79 +163,56 @@ class Player {
             this.animate('idle');
         }
 
-        if (position.x !== this.bmp.x || position.y !== this.bmp.y) {
-            if (!this.detectBombCollision(position)) {
-                if (this.detectWallCollision(position)) {
-                    // If we are on the corner, move to the aisle
-                    var cornerFix = this.getCornerFix(dirX, dirY);
-                    if (cornerFix) {
-                        var fixX = 0;
-                        var fixY = 0;
-                        if (dirX) {
-                            fixY = (cornerFix.y - this.bmp.y) > 0 ? 1 : -1;
-                        } else {
-                            fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
-                        }
-                        this.bmp.x += fixX * this.velocity;
-                        this.bmp.y += fixY * this.velocity;
-                        this.updatePosition();
-                    }
-                } else {
-                    this.bmp.x = position.x;
-                    this.bmp.y = position.y;
-                    this.updatePosition();
-                }
-            }
+        position = this.snapToGrid(position, dirX, dirY);
+
+        if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
+            this.bmp.x = position.x;
+            this.bmp.y = position.y;
+            this.updatePosition();
         }
 
+        /*if (!this.detectWallCollision(position)) {
+            position = this.snapToGrid(position, dirX, dirY);
+            this.bmp.x = position.x;
+            this.bmp.y = position.y;
+            this.updatePosition();
+        } else if (!this.detectBombCollision(position)) {
+            // Only update the position if there is no wall collision
+            this.bmp.x = position.x;
+            this.bmp.y = position.y;
+            this.updatePosition();
+        }*/
+
+        // Handle other collisions
         if (this.detectFireCollision()) {
             this.die();
         }
-
         this.handlePowerUpCollision();
     }
 
-    /**
-     * Checks whether we are on corner to target position.
-     * Returns position where we should move before we can go to target.
-     */
-    getCornerFix(dirX, dirY) {
-        var edgeSize = 30;
+    // Helper function to snap player to the center of a tile if near the center
+    snapToGrid(position, dirX, dirY) {
+        const tileSize = gGameEngine.tileSize;
+        const halfTile = tileSize / 2;
 
-        // fix position to where we should go first
-        var position = {};
+        // Calculate the nearest tile center
+        const snapX = Math.round(position.x / tileSize) * tileSize;
+        const snapY = Math.round(position.y / tileSize) * tileSize;
 
-        // possible fix position we are going to choose from
-        var pos1 = { x: this.position.x + dirY, y: this.position.y + dirX };
-        var bmp1 = Utils.convertToBitmapPosition(pos1);
-
-        var pos2 = { x: this.position.x - dirY, y: this.position.y - dirX };
-        var bmp2 = Utils.convertToBitmapPosition(pos2);
-
-        // in front of current position
-        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) === TILE_FLOOR) {
-            position = this.position;
-        }
-        // right bottom
-        // left top
-        else if (gGameEngine.getTileMaterial(pos1) === TILE_FLOOR
-            && Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) === TILE_FLOOR) {
-                position = pos1;
-            }
-        }
-        // right top
-        // left bottom
-        else if (gGameEngine.getTileMaterial(pos2) === TILE_FLOOR
-            && Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) === TILE_FLOOR) {
-                position = pos2;
+        // Only snap if within the tolerance range (near the tile center)
+        if (dirY !== 0) {
+            if (Math.abs(position.x - snapX) < halfTile) {
+                position.x = snapX;
             }
         }
 
-        if (position.x &&  gGameEngine.getTileMaterial(position) === TILE_FLOOR) {
-            return Utils.convertToBitmapPosition(position);
+        if (dirX !== 0) {
+            if (Math.abs(position.y - snapY) < halfTile) {
+                position.y = snapY;
+            }
         }
+
+        return position;
     }
 
     /**
@@ -239,43 +226,63 @@ class Player {
      * Returns true when collision is detected, and we should not move to target position.
      */
     detectWallCollision(position) {
-        var player = {};
-        player.left = position.x;
-        player.top = position.y;
-        player.right = player.left + this.size.w;
-        player.bottom = player.top + this.size.h;
+        // Define the player hitbox
+        const player = {
+            left: position.x,
+            top: position.y,
+            right: position.x + gGameEngine.tileSize,
+            bottom: position.y + gGameEngine.tileSize,
+        };
 
-        // Check possible collision with all wall and wood tiles
-        var tiles = gGameEngine.tiles;
-        for (var i = 0; i < tiles.length; i++) {
-            var tilePosition = tiles[i].position;
+        // Check for collision with all wall tiles
+        const tiles = gGameEngine.tiles;
+        for (let i = 0; i < tiles.length; i++) {
+            const tile = tiles[i];
 
-            var tile = {};
-            const leftBorder = 22;
-            const topBorder = 18;
-
-            tile.left = tilePosition.x * gGameEngine.tileSize + leftBorder;
-            tile.top = tilePosition.y * gGameEngine.tileSize + topBorder;
-            tile.right = tile.left + gGameEngine.tileSize - 26;
-            tile.bottom = tile.top + gGameEngine.tileSize - 26;
-
-            if (gGameEngine.intersectRect(player, tile)) {
+            // If the player's hitbox overlaps with a wall tile hitbox, a collision is detected
+            if (this.collideTile(player, tile.position.x, tile.position.y)) {
                 return true;
             }
         }
         return false;
     }
 
+    collideTile(player, x, y) {
+        const tileHitbox = {
+            left: x * gGameEngine.tileSize,
+            top: y * gGameEngine.tileSize,
+            right: (x + 1) * gGameEngine.tileSize,
+            bottom: (y + 1) * gGameEngine.tileSize,
+        };
+
+        // If the player's hitbox overlaps with a wall tile hitbox, a collision is detected
+        if (
+            player.right > tileHitbox.left &&
+            player.left < tileHitbox.right &&
+            player.bottom > tileHitbox.top &&
+            player.top < tileHitbox.bottom
+        ) {
+            return true;
+        }
+    }
+
     /**
      * Returns true when the bomb collision is detected, and we should not move to target position.
      */
-    detectBombCollision(pixels) {
-        var position = Utils.convertToEntityPosition(pixels);
+    detectBombCollision(position) {
+        // Define the player hitbox
+        const player = {
+            left: position.x,
+            top: position.y,
+            right: position.x + gGameEngine.tileSize,
+            bottom: position.y + gGameEngine.tileSize,
+        };
 
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             // Compare bomb position
-            if (bomb.position.x === position.x && bomb.position.y === position.y) {
+            if (this.collideTile(player, bomb.position.x, bomb.position.y)) {
+            //if (bomb.position.x === position.x && bomb.position.y === position.y) {
                 // Allow to escape from bomb that appeared on my field
                 if (bomb === this.escapeBomb) {
                     return false;
@@ -325,11 +332,11 @@ class Player {
      * Applies power-up.
      */
     applyPowerUp(powerUp) {
-        if (powerUp.type === POWER_UP_SPEED) {
+        if (powerUp.type === PowerUp.POWER_UP_SPEED) {
             this.velocity += 0.8;
-        } else if (powerUp.type === POWER_UP_BOMB) {
+        } else if (powerUp.type === PowerUp.POWER_UP_BOMB) {
             this.bombsMax++;
-        } else if (powerUp.type === POWER_UP_FIRE) {
+        } else if (powerUp.type === PowerUp.POWER_UP_FIRE) {
             this.bombStrength++;
         }
     }

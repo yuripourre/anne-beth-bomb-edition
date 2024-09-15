@@ -1,4 +1,7 @@
-class Fire {
+import {gGameEngine} from "./GameEngine.js";
+import {Utils} from "./Utils.js";
+
+export class Fire {
     /**
      * Entity position on map grid
      */

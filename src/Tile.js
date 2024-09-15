@@ -1,11 +1,15 @@
-// Breakable tiles
-TILE_BLOCK = 'block';
-// Walkable tiles
-TILE_FLOOR = 'floor';
-// Unbreakable tiles
-TILE_WALL = 'wall';
+import {gGameEngine} from "./GameEngine.js";
+import {Utils} from "./Utils.js";
 
-class Tile {
+export class Tile {
+
+    // Breakable tiles
+    static TILE_BLOCK = 'block';
+    // Walkable tiles
+    static TILE_FLOOR = 'floor';
+    // Unbreakable tiles
+    static TILE_WALL = 'wall';
+
     /**
      * Entity position on map grid
      */
@@ -30,11 +34,11 @@ class Tile {
         this.material = material;
         this.position = position;
         var img;
-        if (material === TILE_FLOOR) {
+        if (material === Tile.TILE_FLOOR) {
             img = gGameEngine.getLevelFloorImage();
-        } else if (material === TILE_WALL) {
+        } else if (material === Tile.TILE_WALL) {
             img = gGameEngine.getLevelWallImage();
-        } else if (material === TILE_BLOCK) {
+        } else if (material === Tile.TILE_BLOCK) {
             img = gGameEngine.getLevelBlockImage();
         }
         this.bmp = new createjs.Bitmap(img);
@@ -42,12 +46,12 @@ class Tile {
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
 
-        if (material === TILE_FLOOR) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
-        } else if (material === TILE_WALL) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
-        } else if (material === TILE_BLOCK) {
-            this.bmp.sourceRect = new createjs.Rectangle(0, 0, 32, 40);
+        if (material === Tile.TILE_FLOOR) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize);
+        } else if (material === Tile.TILE_WALL) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize + 4);
+        } else if (material === Tile.TILE_BLOCK) {
+            this.bmp.sourceRect = new createjs.Rectangle(0, 0, gGameEngine.tileSize, gGameEngine.tileSize + 4);
         }
     }
 

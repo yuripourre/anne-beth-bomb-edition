@@ -1,4 +1,9 @@
-class Bomb {
+import {Utils} from "./Utils.js";
+import {gGameEngine} from "./GameEngine.js";
+import {Tile} from "./Tile.js";
+import {Fire} from "./Fire.js";
+
+export class Bomb {
     /**
      * Entity position on map grid
      */
@@ -98,10 +103,10 @@ class Bomb {
             this.fire(position);
 
             var material = gGameEngine.getTileMaterial(position);
-            if (material === TILE_BLOCK) {
+            if (material === Tile.TILE_BLOCK) {
                 var tile = gGameEngine.getTile(position);
                 tile.remove();
-            } else if (material === TILE_FLOOR) {
+            } else if (material === Tile.TILE_FLOOR) {
                 // Explode bombs in fire
                 for (var j = 0; j < gGameEngine.bombs.length; j++) {
                     var bomb = gGameEngine.bombs[j];
@@ -146,10 +151,10 @@ class Bomb {
 
 
                 var material = gGameEngine.getTileMaterial(position);
-                if (material === TILE_WALL) { // One can not simply burn the wall
+                if (material === Tile.TILE_WALL) { // One can not simply burn the wall
                     explode = false;
                     last = true;
-                } else if (material === TILE_BLOCK) {
+                } else if (material === Tile.TILE_BLOCK) {
                     explode = true;
                     last = true;
                 }

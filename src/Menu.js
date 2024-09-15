@@ -1,10 +1,13 @@
-MODE_SINGLE = 'single';
-MODE_MULTI = 'multi'
+import {gInputEngine} from "./InputEngine.js";
+import {gGameEngine} from "./GameEngine.js";
 
-class Menu {
-    mode = MODE_SINGLE;
+export class Menu {
+    static MODE_SINGLE = 'single';
+    static MODE_MULTI = 'multi'
+
+    mode = Menu.MODE_SINGLE;
     modeIndex = 0;
-    modes = [MODE_SINGLE, MODE_MULTI];
+    modes = [Menu.MODE_SINGLE, Menu.MODE_MULTI];
 
     visible = true;
 
@@ -45,7 +48,7 @@ class Menu {
                 gGameEngine.moveToFront(this.views[i]);
             }
 
-            if (gInputEngine.actions['bomb']) {
+            if (gInputEngine.actions['confirm']) {
                 this.setMode(this.mode);
                 this.nextPressed = true;
             }
@@ -98,7 +101,7 @@ class Menu {
     setMode(mode) {
         this.hide();
 
-        if (mode === MODE_SINGLE) {
+        if (mode === Menu.MODE_SINGLE) {
             gGameEngine.botsCount = 3;
             gGameEngine.playersCount = 1;
         } else {
@@ -120,20 +123,24 @@ class Menu {
         this.views.push(bg);
 
         // game title
-        text = text || [{text: 'Bomber', color: '#ffffff'}, {text: 'girl', color: '#ff4444'}];
+        const title = {text: 'Anne Beth', color: '#ffffff'};
+        const subtext = {text: 'Bomb Edition', color: '#ff4444'};
 
-        var title1 = new createjs.Text(text[0].text, "bold 35px Helvetica", text[0].color);
-        var title2 = new createjs.Text(text[1].text, "bold 35px Helvetica", text[1].color);
+        var title1 = new createjs.Text(title.text, "bold 40px Helvetica", title.color);
+        var title2 = new createjs.Text(subtext.text, "bold 22px Helvetica", subtext.color);
 
-        var titleWidth = title1.getMeasuredWidth() + title2.getMeasuredWidth();
+        var titleWidth = title1.getMeasuredWidth();
+        var subTitleWidth = title2.getMeasuredWidth();
+
+        var offset = 90;
 
         title1.x = gGameEngine.size.w / 2 - titleWidth / 2;
-        title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
+        title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - offset;
         gGameEngine.canvas.addChild(title1);
         this.views.push(title1);
 
-        title2.x = title1.x + title1.getMeasuredWidth();
-        title2.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - 80;
+        title2.x = gGameEngine.size.w / 2 - subTitleWidth / 2;
+        title2.y = gGameEngine.size.h / 2 - title2.getMeasuredHeight() / 2 - (offset - 30);
         gGameEngine.canvas.addChild(title2);
         this.views.push(title2);
 
@@ -153,7 +160,7 @@ class Menu {
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
-            that.setMode(MODE_SINGLE);
+            that.setMode(Menu.MODE_SINGLE);
         });
 
         var singleTitle1 = new createjs.Text("single", "16px Helvetica", "#ff4444");
@@ -171,10 +178,10 @@ class Menu {
         gGameEngine.canvas.addChild(singleTitle2);
         this.views.push(singleTitle2)
 
-        var iconsY = modesY + 13;
-        var singleIcon = new createjs.Bitmap("static/img/betty.png");
-        singleIcon.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        singleIcon.x = singleX + (modeSize - 48) / 2;
+        var iconsY = modesY + 23;
+        var singleIcon = new createjs.Bitmap("static/img/chars/witch.png");
+        singleIcon.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        singleIcon.x = singleX + (modeSize - 32) / 2;
         singleIcon.y = iconsY;
         gGameEngine.canvas.addChild(singleIcon);
         this.views.push(singleIcon);
@@ -190,7 +197,7 @@ class Menu {
         this.views.push(multiBg);
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
-            that.setMode(MODE_MULTI);
+            that.setMode(Menu.MODE_MULTI);
         });
 
         var multiTitle1 = new createjs.Text("multi", "16px Helvetica", "#99cc00");
@@ -207,16 +214,16 @@ class Menu {
         gGameEngine.canvas.addChild(multiTitle2);
         this.views.push(multiTitle2)
 
-        var multiIconGirl = new createjs.Bitmap("static/img/betty.png");
-        multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        multiIconGirl.x = multiX + (modeSize - 48) / 2 - 48/2 + 8;
+        var multiIconGirl = new createjs.Bitmap("static/img/chars/witch.png");
+        multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconGirl.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
         multiIconGirl.y = iconsY;
         gGameEngine.canvas.addChild(multiIconGirl);
         this.views.push(multiIconGirl);
 
-        var multiIconBoy = new createjs.Bitmap("static/img/betty2.png");
-        multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 48, 48);
-        multiIconBoy.x = multiX + (modeSize - 48) / 2 + 48/2 - 8;
+        var multiIconBoy = new createjs.Bitmap("static/img/chars/princess.png");
+        multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconBoy.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
         multiIconBoy.y = iconsY;
         gGameEngine.canvas.addChild(multiIconBoy);
         this.views.push(multiIconBoy);
@@ -238,7 +245,7 @@ class Menu {
 
     updateModes() {
         // Change background color
-        if (this.mode === MODE_SINGLE) {
+        if (this.mode === Menu.MODE_SINGLE) {
             this.singleBgFillCommand.style = "rgba(255, 255, 255, 0.4)";
             this.multiBgFillCommand.style = "rgba(0, 0, 0, 0.5)";
         } else {

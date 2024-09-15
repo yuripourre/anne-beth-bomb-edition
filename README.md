@@ -1,4 +1,4 @@
-HTML5 Bombergirl
+Anne Beth: Bomber Edition
 ================
 
 Bombergirl is a remake of a classic game known as Bomberman. You can play alone against the AI bots, but it also supports multiplayer, so you can play with your friend on the same computer.
@@ -9,12 +9,12 @@ Developed after participating in [HTML5 Game Development (CS255)](https://www.ud
 
 ![HTML5 Bombergirl](http://matousskala.cz/files/bomberman_screen.png)
 
-Demo: http://bombergirl.matousskala.cz
+Demo: https://yuripourre.itch.io/anne-beth-bomb-edition
 
 Installation
 ------------
-1. Clone this repository: ```git clone https://github.com/MattSkala/html5-bombergirl.git```
-2. ```cd html5-bombergirl```
+1. Clone this repository: ```git clone https://github.com/yuripourre/anne-beth-bomb-edition.git```
+2. ```cd anne-beth-bomb-edition```
 3. Make sure you have `npm` installed: ```npm install```
 4. Run the HTTP server: ```npm run dev```
 5. Launch http://127.0.0.1:8000

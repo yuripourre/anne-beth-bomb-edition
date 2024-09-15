@@ -1,4 +1,4 @@
-class Level {
+export class Level {
     name = null;
 
     blockFile = null;
@@ -16,5 +16,4 @@ class Level {
         this.floorFile = floorFile;
         this.wallFile = wallFile;
     }
-
 }

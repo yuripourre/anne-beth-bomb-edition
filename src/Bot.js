@@ -1,4 +1,10 @@
-class Bot extends Player {
+import {Player} from "./Player.js";
+import {gGameEngine} from "./GameEngine.js";
+import {Utils} from "./Utils.js";
+import {Tile} from "./Tile.js";
+import {Bomb} from "./Bomb.js";
+
+export class Bot extends Player {
     /**
      * Current direction
      */
@@ -132,7 +138,9 @@ class Bot extends Player {
         }
 
         var targetPosition = { x: this.bmp.x + this.dirX * velocity, y: this.bmp.y + this.dirY * velocity };
-        if (!this.detectWallCollision(targetPosition)) {
+        // Attempt to fix bots walking through bombs
+        if (!this.detectWallCollision(targetPosition) /*&& !this.detectBombCollision(targetPosition)*/) {
+            //position = this.snapToGrid(position, dirX, dirY);
             this.bmp.x = targetPosition.x;
             this.bmp.y = targetPosition.y;
         }
@@ -154,7 +162,7 @@ class Bot extends Player {
             else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) === TILE_FLOOR && !this.hasBomb(position)) {
+            if (gGameEngine.getTileMaterial(position) === Tile.TILE_FLOOR && !this.hasBomb(position)) {
                 targets.push(position);
             }
         }
@@ -254,7 +262,7 @@ class Bot extends Player {
             else if (i === 3) { dirX = 0; dirY = -1; }
 
             var position = { x: this.position.x + dirX, y: this.position.y + dirY };
-            if (gGameEngine.getTileMaterial(position) === TILE_BLOCK) {
+            if (gGameEngine.getTileMaterial(position) === Tile.TILE_BLOCK) {
                 return gGameEngine.getTile(position);
             }
         }
