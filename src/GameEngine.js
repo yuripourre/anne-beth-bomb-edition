@@ -54,9 +54,38 @@ export class GameEngine {
         // Prevent default on mouse click (necessary if canvas is inside an iframe)
         this.canvas.preventSelection = false;
 
+        const that = this;
+
+        addEventListener("fullscreenchange", (event) => {
+            // On Exit Full Screen
+            if (document.fullscreenElement == null) {
+                that.canvas.scaleX = 1;
+                that.canvas.scaleY = 1;
+
+                that.canvas.width = 545;
+                that.canvas.height = 360;
+            } else {
+                // browser viewport size
+                const w = window.width;
+                const h = window.height;
+
+                // stage dimensions
+                const ow = 545;
+                const oh = 360;
+
+                // keep aspect ratio
+                const scale = Math.min(w / ow, h / oh);
+                that.canvas.scaleX = scale;
+                that.canvas.scaleY = scale;
+
+                // adjust canvas size
+                that.canvas.width = ow * scale;
+                that.canvas.height = oh * scale;
+            }
+        });
+
         // Load assets
         var queue = new createjs.LoadQueue();
-        var that = this;
 
         // Define levels
         //this.levels.push(new Level("classic", "static/img/levels/classic/block.png", "static/img/levels/classic/grass.png", "static/img/levels/classic/wall.png"));

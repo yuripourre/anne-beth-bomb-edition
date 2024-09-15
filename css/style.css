@@ -1,10 +1,11 @@
  .container {
-    width: 545px;
+    width: 640px;
 }
 
 #game {
     margin: auto;
     text-align: center;
+    background: black;
 }
 
 .footer .alert {
