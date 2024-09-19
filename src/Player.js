@@ -323,6 +323,10 @@ export class Player {
             var powerUp = gGameEngine.powerUps[i];
             if (Utils.comparePositions(powerUp.position, this.position)) {
                 this.applyPowerUp(powerUp);
+                if (!gGameEngine.mute && gGameEngine.soundtrackPlaying) {
+                    var powerUpSound = createjs.Sound.play("powerup");
+                    powerUpSound.volume = 0.2;
+                }
                 powerUp.destroy();
             }
         }

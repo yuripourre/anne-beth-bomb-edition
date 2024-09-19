@@ -135,6 +135,7 @@ export class GameEngine {
 
         createjs.Sound.addEventListener("fileload", this.onSoundLoaded);
         createjs.Sound.alternateExtensions = ["mp3"];
+        createjs.Sound.registerSound("static/sound/powerup.ogg", "powerup");
         createjs.Sound.registerSound("static/sound/bomb.ogg", "bomb");
         createjs.Sound.registerSound("static/sound/game.ogg", "game");
 
