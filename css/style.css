@@ -1,9 +1,11 @@
- .container {
+.container {
     width: 640px;
+    text-align: center;
 }
 
 #game {
     margin: auto;
+    width: 640px;
     text-align: center;
     background: black;
 }

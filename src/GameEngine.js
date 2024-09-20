@@ -53,6 +53,7 @@ export class GameEngine {
         this.canvas.enableMouseOver();
         // Prevent default on mouse click (necessary if canvas is inside an iframe)
         this.canvas.preventSelection = false;
+        this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
 
         const that = this;
 
@@ -62,21 +63,21 @@ export class GameEngine {
                 that.canvas.scaleX = 1;
                 that.canvas.scaleY = 1;
 
-                that.canvas.width = 545;
+                that.canvas.width = 640;
                 that.canvas.height = 360;
+
+                this.canvas.x = (that.canvas.width - this.tilesX * this.tileSize) / 2;
             } else {
                 // browser viewport size
-                const w = window.width;
-                const h = window.height;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
 
                 // stage dimensions
-                const ow = 545;
+                const ow = 640;
                 const oh = 360;
 
                 // keep aspect ratio
                 const scale = Math.min(w / ow, h / oh);
-                that.canvas.scaleX = scale;
-                that.canvas.scaleY = scale;
 
                 // adjust canvas size
                 that.canvas.width = ow * scale;
