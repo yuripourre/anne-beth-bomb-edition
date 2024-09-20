@@ -1,11 +1,13 @@
 .container {
     width: 640px;
+    height: 360px;
     text-align: center;
 }
 
 #game {
     margin: auto;
     width: 640px;
+    height: 360px;
     text-align: center;
     background: black;
 }

@@ -4,6 +4,9 @@ import {gGameEngine} from "./GameEngine.js";
 export class Menu {
     static MODE_SINGLE = 'single';
     static MODE_MULTI = 'multi'
+  
+    static HIGHLIGHT_COLOR = "rgba(255, 255, 255, 0.3)";
+    static DISABLED_COLOR = "rgba(0, 0, 0, 0.5)";
 
     mode = Menu.MODE_SINGLE;
     modeIndex = 0;
@@ -116,8 +119,12 @@ export class Menu {
     draw(text) {
         var that = this;
 
+        var bgImage = new createjs.Bitmap("static/img/ui/menu.jpg");
+        gGameEngine.canvas.addChild(bgImage);
+        this.views.push(bgImage);
+
         // semi-transparent black background
-        var bgGraphics = new createjs.Graphics().beginFill("rgba(0, 0, 0, 0.5)").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
+        var bgGraphics = new createjs.Graphics().beginFill(Menu.DISABLED_COLOR).drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
         gGameEngine.canvas.addChild(bg);
         this.views.push(bg);
@@ -159,7 +166,7 @@ export class Menu {
         // singleplayer button
         var singleX = gGameEngine.size.w / 2 - modeSize - modesDistance;
         var singleBgGraphics = new createjs.Graphics();
-        this.singleBgFillCommand = singleBgGraphics.beginFill("rgba(0, 0, 0, 0.5)").command;
+        this.singleBgFillCommand = singleBgGraphics.beginFill(Menu.DISABLED_COLOR).command;
         singleBgGraphics.drawRect(singleX, modesY, modeSize, modeSize);
 
         var singleBg = new createjs.Shape(singleBgGraphics);
@@ -168,6 +175,10 @@ export class Menu {
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
             that.setMode(Menu.MODE_SINGLE);
+        });
+        singleBg.addEventListener('mouseover', function() {
+            that.mode = Menu.MODE_SINGLE;
+            that.updateModes();
         });
 
         var singleTitle1 = new createjs.Text("single", "16px Helvetica", "#ff4444");
@@ -196,7 +207,7 @@ export class Menu {
         // multiplayer button
         var multiX = gGameEngine.size.w / 2 + modesDistance;
         var multiBgGraphics = new createjs.Graphics();
-        this.multiBgFillCommand = multiBgGraphics.beginFill("rgba(0, 0, 0, 0.5)").command;
+        this.multiBgFillCommand = multiBgGraphics.beginFill(Menu.DISABLED_COLOR).command;
         multiBgGraphics.drawRect(multiX, modesY, modeSize, modeSize);
 
         var multiBg = new createjs.Shape(multiBgGraphics);
@@ -205,6 +216,11 @@ export class Menu {
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
             that.setMode(Menu.MODE_MULTI);
+        });
+
+        multiBg.addEventListener('mouseover', function() {
+            that.mode = Menu.MODE_MULTI;
+            that.updateModes();
         });
 
         var multiTitle1 = new createjs.Text("multi", "16px Helvetica", "#99cc00");
@@ -253,11 +269,11 @@ export class Menu {
     updateModes() {
         // Change background color
         if (this.mode === Menu.MODE_SINGLE) {
-            this.singleBgFillCommand.style = "rgba(255, 255, 255, 0.4)";
-            this.multiBgFillCommand.style = "rgba(0, 0, 0, 0.5)";
+            this.singleBgFillCommand.style = Menu.HIGHLIGHT_COLOR;
+            this.multiBgFillCommand.style = Menu.DISABLED_COLOR;
         } else {
-            this.singleBgFillCommand.style = "rgba(0, 0, 0, 0.5)";
-            this.multiBgFillCommand.style = "rgba(255, 255, 255, 0.4)";
+            this.singleBgFillCommand.style = Menu.DISABLED_COLOR;
+            this.multiBgFillCommand.style = Menu.HIGHLIGHT_COLOR;
         }
     }
 }

@@ -48,12 +48,16 @@ export class GameEngine {
     }
 
     load() {
+        this.size.w = 640;
+        this.size.h = 360;
+
         // Init canvas
         this.canvas = new createjs.Stage("game-canvas");
         this.canvas.enableMouseOver();
         // Prevent default on mouse click (necessary if canvas is inside an iframe)
         this.canvas.preventSelection = false;
-        this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
+        // If menu is open, offset is fine
+        //this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
 
         const that = this;
 
@@ -65,8 +69,6 @@ export class GameEngine {
 
                 that.canvas.width = 640;
                 that.canvas.height = 360;
-
-                this.canvas.x = (that.canvas.width - this.tilesX * this.tileSize) / 2;
             } else {
                 // browser viewport size
                 const w = window.innerWidth;
@@ -121,7 +123,8 @@ export class GameEngine {
             {id: "playerGirl2", src: "static/img/chars/princess.png"},
             {id: "bomb", src: "static/img/bomb.png"},
             {id: "fire", src: "static/img/fire.png"},
-            {id: "powerups", src: "static/img/powerups.png"}
+            {id: "powerups", src: "static/img/powerups.png"},
+            {id: "menu", src: "static/img/ui/menu.jpg"},
         ];
 
         // Add level images to manifest
@@ -181,9 +184,12 @@ export class GameEngine {
             });
         }, 200);
 
+        const that = this;
         // Escape listener
         gInputEngine.addListener('escape', function() {
             if (!gGameEngine.menu.visible) {
+                // Reset canvas position
+                that.canvas.x = 0;
                 gGameEngine.menu.show();
             }
         });
@@ -423,6 +429,7 @@ export class GameEngine {
     gameOver(status) {
         if (this.menu.visible) { return; }
 
+        this.canvas.x = 0;
         if (status === 'win') {
             var winText = "You won!";
             if (this.playersCount > 1) {
@@ -445,6 +452,8 @@ export class GameEngine {
     }
 
     restart() {
+        this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
+
         gInputEngine.removeAllListeners();
         gGameEngine.canvas.removeAllChildren();
         gGameEngine.setup();
