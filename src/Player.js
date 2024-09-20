@@ -337,7 +337,7 @@ export class Player {
      */
     applyPowerUp(powerUp) {
         if (powerUp.type === PowerUp.POWER_UP_SPEED) {
-            this.velocity += 0.8;
+            this.velocity += 0.6;
         } else if (powerUp.type === PowerUp.POWER_UP_BOMB) {
             this.bombsMax++;
         } else if (powerUp.type === PowerUp.POWER_UP_FIRE) {
