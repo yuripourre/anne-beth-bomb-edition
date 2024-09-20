@@ -122,9 +122,16 @@ export class Menu {
         gGameEngine.canvas.addChild(bg);
         this.views.push(bg);
 
-        // game title
         const title = {text: 'Anne Beth', color: '#ffffff'};
         const subtext = {text: 'Bomb Edition', color: '#ff4444'};
+
+        if (text) {
+            title.text = text[0].text;
+            title.color = text[0].color;
+
+            subtext.text = text[1].text;
+            subtext.color = text[1].color;
+        }
 
         var title1 = new createjs.Text(title.text, "bold 40px Helvetica", title.color);
         var title2 = new createjs.Text(subtext.text, "bold 22px Helvetica", subtext.color);

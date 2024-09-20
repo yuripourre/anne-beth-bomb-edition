@@ -225,28 +225,17 @@ export class Bot extends Player {
      */
     die() {
         super.die();
-        var botsAlive = false;
 
-        // Cache bots
-        var bots = [];
-        for (var i = 0; i < gGameEngine.bots.length; i++) {
-            bots.push(gGameEngine.bots[i]);
-        }
-
+        const bots = gGameEngine.bots;
         for (var i = 0; i < bots.length; i++) {
             var bot = bots[i];
             // Remove bot
             if (bot === this) {
-                gGameEngine.bots.splice(i, 1);
-            }
-            if (bot.alive) {
-                botsAlive = true;
+                bots.splice(i, 1);
             }
         }
 
-        if (!botsAlive && gGameEngine.countPlayersAlive() === 1) {
-            gGameEngine.gameOver('win');
-        }
+        gGameEngine.checkGameOver();
     }
 
     /**

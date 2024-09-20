@@ -398,13 +398,34 @@ export class GameEngine {
         return (tile) ? tile.material : Tile.TILE_FLOOR;
     }
 
+    checkGameOver() {
+        if (this.countPlayersAlive() === 1 && this.playersCount === 2) {
+            this.gameOver('win');
+        } else if (gGameEngine.countPlayersAlive() === 0) {
+            this.gameOver('lose');
+        }
+
+        var botsAlive = false;
+
+        for (var i = 0; i < this.bots.length; i++) {
+            var bot = this.bots[i];
+            if (bot.alive) {
+                botsAlive = true;
+            }
+        }
+
+        if (!botsAlive && this.countPlayersAlive() === 1) {
+            this.gameOver('win');
+        }
+    }
+
     gameOver(status) {
-        if (gGameEngine.menu.visible) { return; }
+        if (this.menu.visible) { return; }
 
         if (status === 'win') {
             var winText = "You won!";
-            if (gGameEngine.playersCount > 1) {
-                var winner = gGameEngine.getWinner();
+            if (this.playersCount > 1) {
+                var winner = this.getWinner();
                 winText = winner === 0 ? "Player 1 won!" : "Player 2 won!";
             }
             this.menu.show([{text: winText, color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
