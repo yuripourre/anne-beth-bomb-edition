@@ -88,6 +88,7 @@ export class GameEngine {
         var queue = new createjs.LoadQueue();
 
         // Define levels
+
         //this.levels.push(new Level("classic", "static/img/levels/classic/block.png", "static/img/levels/classic/grass.png", "static/img/levels/classic/wall.png"));
         this.levels.push(new Level("original", "static/img/levels/original/tile_wood.png", "static/img/levels/original/tile_grass.png", "static/img/levels/original/tile_wall.png"));
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
@@ -310,6 +311,8 @@ export class GameEngine {
                     this.powerUps.push(powerUp);
 
                     placedCount++;
+
+                    tile.powerUp = powerUp;
                 }
             }
         }

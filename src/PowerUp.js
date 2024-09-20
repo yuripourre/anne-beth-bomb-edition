@@ -12,19 +12,23 @@ export class PowerUp {
     type = '';
     position = {};
     bmp = null;
-
-    constructor(position, typePosition) {
-        this.type = this.types[typePosition];
+    spriteIndex = 0;
+    
+    constructor(position, spriteIndex) {
+        this.type = this.types[spriteIndex];
+        this.spriteIndex = spriteIndex;
         
         this.position = position;
+    }
 
+    create() {
         var tileSize = gGameEngine.tileSize;
-        
+
         this.bmp = new createjs.Bitmap(gGameEngine.powerUpsImg);
-        var pixels = Utils.convertToBitmapPosition(position);
+        var pixels = Utils.convertToBitmapPosition(this.position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
-        this.bmp.sourceRect = new createjs.Rectangle(typePosition * tileSize, 0, tileSize, tileSize);
+        this.bmp.sourceRect = new createjs.Rectangle(this.spriteIndex * tileSize, 0, tileSize, tileSize);
         gGameEngine.canvas.addChild(this.bmp);
     }
 

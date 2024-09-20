@@ -30,6 +30,8 @@ export class Tile {
 
     material = '';
 
+    powerUp = null;
+
     constructor(material, position) {
         this.material = material;
         this.position = position;
@@ -65,6 +67,10 @@ export class Tile {
             if (this === tile) {
                 gGameEngine.tiles.splice(i, 1);
             }
+        }
+
+        if (this.powerUp) {
+            this.powerUp.create();
         }
     }
 }
