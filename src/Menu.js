@@ -221,19 +221,19 @@ export class Menu {
         gGameEngine.canvas.addChild(multiTitle2);
         this.views.push(multiTitle2)
 
-        var multiIconGirl = new createjs.Bitmap("static/img/chars/witch.png");
-        multiIconGirl.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
-        multiIconGirl.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
-        multiIconGirl.y = iconsY;
-        gGameEngine.canvas.addChild(multiIconGirl);
-        this.views.push(multiIconGirl);
+        var multiIconPrincess = new createjs.Bitmap("static/img/chars/princess.png");
+        multiIconPrincess.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconPrincess.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
+        multiIconPrincess.y = iconsY - 4;
+        gGameEngine.canvas.addChild(multiIconPrincess);
+        this.views.push(multiIconPrincess);
 
-        var multiIconBoy = new createjs.Bitmap("static/img/chars/princess.png");
-        multiIconBoy.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
-        multiIconBoy.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
-        multiIconBoy.y = iconsY;
-        gGameEngine.canvas.addChild(multiIconBoy);
-        this.views.push(multiIconBoy);
+        var multiIconWitch = new createjs.Bitmap("static/img/chars/witch.png");
+        multiIconWitch.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
+        multiIconWitch.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
+        multiIconWitch.y = iconsY;
+        gGameEngine.canvas.addChild(multiIconWitch);
+        this.views.push(multiIconWitch);
 
         this.updateModes();
     }
