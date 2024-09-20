@@ -188,13 +188,23 @@ export class Menu {
 
         singleTitle1.x = singleX + (modeSize - singleTitleWidth) / 2;
         singleTitle1.y = modeTitlesY;
-        gGameEngine.canvas.addChild(singleTitle1);
-        this.views.push(singleTitle1)
 
         singleTitle2.x = singleTitle1.x + singleTitle1.getMeasuredWidth();
-        singleTitle2.y = modeTitlesY;
+        singleTitle2.y = singleTitle1.y;
+
+        var multiTitle1Border = this.createBorder(singleTitle1);
+        gGameEngine.canvas.addChild(multiTitle1Border);
+        this.views.push(multiTitle1Border);
+
+        var multiTitle2Border = this.createBorder(singleTitle2);
+        gGameEngine.canvas.addChild(multiTitle2Border);
+        this.views.push(multiTitle2Border);
+
+        gGameEngine.canvas.addChild(singleTitle1);
+        this.views.push(singleTitle1);
+
         gGameEngine.canvas.addChild(singleTitle2);
-        this.views.push(singleTitle2)
+        this.views.push(singleTitle2);
 
         var iconsY = modesY + 23;
         var singleIcon = new createjs.Bitmap("static/img/chars/witch.png");
@@ -229,13 +239,23 @@ export class Menu {
 
         multiTitle1.x = multiX + (modeSize - multiTitleWidth) / 2;
         multiTitle1.y = modeTitlesY;
-        gGameEngine.canvas.addChild(multiTitle1);
-        this.views.push(multiTitle1)
-
+        
         multiTitle2.x = multiTitle1.x + multiTitle1.getMeasuredWidth();
         multiTitle2.y = modeTitlesY;
+        
+        var multiTitle1Border = this.createBorder(multiTitle1);
+        gGameEngine.canvas.addChild(multiTitle1Border);
+        this.views.push(multiTitle1Border);
+
+        var multiTitle2Border = this.createBorder(multiTitle2);
+        gGameEngine.canvas.addChild(multiTitle2Border);
+        this.views.push(multiTitle2Border);
+
+        gGameEngine.canvas.addChild(multiTitle1);
+        this.views.push(multiTitle1);
+        
         gGameEngine.canvas.addChild(multiTitle2);
-        this.views.push(multiTitle2)
+        this.views.push(multiTitle2);
 
         var multiIconPrincess = new createjs.Bitmap("static/img/chars/princess.png");
         multiIconPrincess.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
@@ -275,5 +295,15 @@ export class Menu {
             this.singleBgFillCommand.style = Menu.DISABLED_COLOR;
             this.multiBgFillCommand.style = Menu.HIGHLIGHT_COLOR;
         }
+    }
+
+    createBorder(textElement) {
+        const shadowColor = "#000000";
+        var border = new createjs.Text(textElement.text, textElement.font, shadowColor);
+        border.outline = 2;
+        border.x = textElement.x;
+        border.y = textElement.y;
+
+        return border;
     }
 }
