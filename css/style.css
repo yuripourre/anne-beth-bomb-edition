@@ -3,6 +3,8 @@
 }
 
 #game {
+    width: 640px;
+    height: 360px;
     margin: auto;
     text-align: center;
     background: black;

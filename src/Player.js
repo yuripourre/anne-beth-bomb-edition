@@ -29,6 +29,11 @@ export class Player {
     position = {};
 
     /**
+     * Absolute bitmap position
+     */
+    bmpPosition = {};
+
+    /**
      * Bitmap dimensions
      */
     size = {
@@ -86,9 +91,9 @@ export class Player {
         this.bmp = new createjs.Sprite(spriteSheet);
 
         this.position = position;
-        var pixels = Utils.convertToBitmapPosition(position);
-        this.bmp.x = pixels.x;
-        this.bmp.y = pixels.y;
+        this.bmpPosition = Utils.convertToBitmapPosition(position);
+        this.bmp.x = this.bmpPosition.x;
+        this.bmp.y = this.bmpPosition.y;
 
         gGameEngine.canvas.addChild(this.bmp);
 
@@ -138,7 +143,7 @@ export class Player {
             return;
         }
 
-        let position = { x: this.bmp.x, y: this.bmp.y };
+        let position = { x: this.bmpPosition.x, y: this.bmpPosition.y };
 
         let dirX = 0;
         let dirY = 0;
@@ -166,6 +171,7 @@ export class Player {
         position = this.snapToGrid(position, dirX, dirY);
 
         if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
+            this.bmpPosition = position;
             this.bmp.x = position.x;
             this.bmp.y = position.y;
             this.updatePosition();
@@ -196,8 +202,8 @@ export class Player {
         const halfTile = tileSize / 2;
 
         // Calculate the nearest tile center
-        const snapX = Math.round(position.x / tileSize) * tileSize;
-        const snapY = Math.round(position.y / tileSize) * tileSize;
+        const snapX = Math.round(position.x / tileSize) * tileSize + gGameEngine.offsetX;
+        const snapY = Math.round(position.y / tileSize) * tileSize + gGameEngine.offsetY;
 
         // Only snap if within the tolerance range (near the tile center)
         if (dirY !== 0) {

@@ -15,8 +15,8 @@ export class Utils {
      */
     static convertToEntityPosition(pixels) {
         var position = {};
-        position.x = Math.round(pixels.x / gGameEngine.tileSize);
-        position.y = Math.round(pixels.y /gGameEngine.tileSize);
+        position.x = Math.round((pixels.x - gGameEngine.offsetX) / gGameEngine.tileSize);
+        position.y = Math.round((pixels.y - gGameEngine.offsetY) / gGameEngine.tileSize);
         return position;
     };
 
@@ -25,8 +25,8 @@ export class Utils {
      */
     static convertToBitmapPosition(entity) {
         var position = {};
-        position.x = entity.x * gGameEngine.tileSize;
-        position.y = entity.y * gGameEngine.tileSize;
+        position.x = entity.x * gGameEngine.tileSize + gGameEngine.offsetX;
+        position.y = entity.y * gGameEngine.tileSize + gGameEngine.offsetY;
         return position;
     };
 

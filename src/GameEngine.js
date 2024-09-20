@@ -5,11 +5,16 @@ import {Bot} from "./Bot.js";
 import {Player} from "./Player.js";
 import {Menu} from "./Menu.js";
 import {PowerUp} from "./PowerUp.js";
+import {Utils} from "./Utils.js";
 
 export class GameEngine {
     tileSize = 32;
     tilesX = 17;
     tilesY = 11;
+
+    offsetX = 0;
+    offsetY = 0;
+
     size = {};
     fps = 50;
     botsCount = 2; /* 0 - 3 */
@@ -21,6 +26,7 @@ export class GameEngine {
     players = [];
     bots = [];
     tiles = [];
+    floors = [];
     bombs = [];
     powerUps = [];
     levels = [];
@@ -54,23 +60,33 @@ export class GameEngine {
         // Prevent default on mouse click (necessary if canvas is inside an iframe)
         this.canvas.preventSelection = false;
 
-        const that = this;
+        // For some reason we need to set this width
+        this.canvas.width = 640;
+        this.canvas.height = 360;
 
+        this.size.w = this.canvas.width;
+        this.size.h = this.canvas.height;
+
+        this.offsetX = (this.canvas.width - (this.tilesX * this.tileSize)) / 2;
+        this.offsetY = (this.canvas.height - (this.tilesY * this.tileSize)) / 2;
+
+        const that = this;
         addEventListener("fullscreenchange", (event) => {
             // On Exit Full Screen
             if (document.fullscreenElement == null) {
                 that.canvas.scaleX = 1;
                 that.canvas.scaleY = 1;
 
-                that.canvas.width = 545;
+                that.canvas.width = 640;
                 that.canvas.height = 360;
             } else {
+                // On enter full screen
                 // browser viewport size
                 const w = window.width;
                 const h = window.height;
 
                 // stage dimensions
-                const ow = 545;
+                const ow = 640;
                 const oh = 360;
 
                 // keep aspect ratio
@@ -260,6 +276,7 @@ export class GameEngine {
                     // Grass tiles
                     var tile = new Tile(Tile.TILE_FLOOR, { x: j, y: i });
                     this.canvas.addChild(tile.bmp);
+                    this.floors.push(tile);
 
                     // Wood tiles
                     if (!(i <= 2 && j <= 2)
@@ -273,6 +290,32 @@ export class GameEngine {
                     }
                 }
             }
+        }
+
+
+        console.log(this.canvas.width);
+        console.log(this.tilesX * this.tileSize);
+        /* var offsetX = (this.canvas.width - (this.tilesX * this.tileSize)) / 2;
+        var offsetY = (this.canvas.height - (this.tilesY * this.tileSize)) / 2;
+        this.moveStage(offsetX, offsetY); */
+    }
+
+    moveStage(x, y) {
+        for (var i = 0; i < this.floors.length; i++) {
+            var tile = this.floors[i];
+            
+            var pixels = Utils.convertToBitmapPosition(tile.position);
+            console.log(pixels.x, pixels.y, x, y);
+            tile.bmp.x = pixels.x + x;
+            tile.bmp.y = pixels.y + y;
+        }
+        for (var i = 0; i < this.tiles.length; i++) {
+            var tile = this.tiles[i];
+            
+            var pixels = Utils.convertToBitmapPosition(tile.position);
+            console.log(pixels.x, pixels.y, x, y);
+            tile.bmp.x = pixels.x + x;
+            tile.bmp.y = pixels.y + y;
         }
     }
 
