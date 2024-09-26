@@ -1,5 +1,5 @@
 import {Utils} from "../Utils";
-import {gGameEngine} from "../GameEngine";
+import {gGameEngine} from "../../app.js";
 import {Bot} from "../Bot";
 import {Tile} from "../Tile";
 

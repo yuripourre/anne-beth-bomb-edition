@@ -1,23 +1,24 @@
+import {gGameEngine} from "../app.js";
+import {gInputEngine} from "../InputEngine.js";
 import {Tile} from "./Tile.js";
 import {Level} from "./Level.js";
-import {gInputEngine} from "./InputEngine.js";
 import {Bot} from "./Bot.js";
 import {Player} from "./Player.js";
 import {Menu} from "./Menu.js";
 import {PowerUp} from "./PowerUp.js";
+import {Engine} from "../Engine.js";
 
-export class GameEngine {
+export class BomberGame extends Engine {
     tileSize = 32;
     tilesX = 17;
     tilesY = 11;
-    size = {};
-    fps = 50;
+
+    menu = null;
+
     botsCount = 2; /* 0 - 3 */
     playersCount = 2; /* 1 - 2 */
     powerUpsPercent = 16;
 
-    canvas = null;
-    menu = null;
     players = [];
     bots = [];
     tiles = [];
@@ -26,21 +27,8 @@ export class GameEngine {
     levels = [];
     currentLevel = null;
 
-    playerBoyImg = null;
-    playerBoyImg2 = null;
-    playerGirlImg = null;
-    playerGirl2Img = null;
-    bombImg = null;
-    fireImg = null;
-    powerUpsImg = null;
-
-    playing = false;
-    mute = false;
-    soundtrackLoaded = false;
-    soundtrackPlaying = false;
-    soundtrack = null;
-
     constructor() {
+        super();
         this.size = {
             w: this.tileSize * this.tilesX,
             h: this.tileSize * this.tilesY
@@ -51,41 +39,12 @@ export class GameEngine {
         this.size.w = 640;
         this.size.h = 360;
 
-        // Init canvas
-        this.canvas = new createjs.Stage("game-canvas");
-        this.canvas.enableMouseOver();
-        // Prevent default on mouse click (necessary if canvas is inside an iframe)
-        this.canvas.preventSelection = false;
+        super.load();
+
         // If menu is open, offset is fine
         //this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
 
         const that = this;
-
-        addEventListener("fullscreenchange", (event) => {
-            // On Exit Full Screen
-            if (document.fullscreenElement == null) {
-                that.canvas.scaleX = 1;
-                that.canvas.scaleY = 1;
-
-                that.canvas.width = 640;
-                that.canvas.height = 360;
-            } else {
-                // browser viewport size
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-
-                // stage dimensions
-                const ow = 640;
-                const oh = 360;
-
-                // keep aspect ratio
-                const scale = Math.min(w / ow, h / oh);
-
-                // adjust canvas size
-                that.canvas.width = ow * scale;
-                that.canvas.height = oh * scale;
-            }
-        });
 
         // Load assets
         var queue = new createjs.LoadQueue();
@@ -97,16 +56,16 @@ export class GameEngine {
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
 
         queue.addEventListener("complete", function() {
-            that.playerBoyImg = queue.getResult("playerBoy");
-            that.playerBoy2Img = queue.getResult("playerBoy2");
-            that.playerGirlImg = queue.getResult("playerGirl");
-            that.playerGirl2Img = queue.getResult("playerGirl2");
-            that.bombImg = queue.getResult("bomb");
-            that.fireImg = queue.getResult("fire");
-            that.powerUpsImg = queue.getResult("powerups");
+            that.imgs['playerBoyImg'] = queue.getResult("playerBoy");
+            that.imgs['playerBoy2Img'] = queue.getResult("playerBoy2");
+            that.imgs['playerGirlImg'] = queue.getResult("playerGirl");
+            that.imgs['playerGirl2Img'] = queue.getResult("playerGirl2");
+            that.imgs['bombImg'] = queue.getResult("bomb");
+            that.imgs['fireImg'] = queue.getResult("fire");
+            that.imgs['powerUpsImg'] = queue.getResult("powerups");
 
             // Load levels
-            for (var l = 0; l < that.levels.length; l++) {
+            for (let l = 0; l < that.levels.length; l++) {
                 var level = that.levels[l];
                 level.blockImg = queue.getResult(`${level.name}_tile_block`);
                 level.floorImg = queue.getResult(`${level.name}_tile_floor`);
@@ -128,7 +87,7 @@ export class GameEngine {
         ];
 
         // Add level images to manifest
-        for (var l = 0; l < that.levels.length; l++) {
+        for (let l = 0; l < that.levels.length; l++) {
             var level = that.levels[l];
 
             manifest.push({id: `${level.name}_tile_block`, src: level.blockFile});
@@ -150,6 +109,38 @@ export class GameEngine {
 
     setup() {
         if (!gInputEngine.bindings.length) {
+            gInputEngine.bindKey(38, 'up');
+            gInputEngine.bindKey(37, 'left');
+            gInputEngine.bindKey(40, 'down');
+            gInputEngine.bindKey(39, 'right');
+            gInputEngine.bindKey(32, 'bomb');
+            gInputEngine.bindKey(18, 'bomb');
+
+            gInputEngine.bindKey(87, 'up2');
+            gInputEngine.bindKey(65, 'left2');
+            gInputEngine.bindKey(83, 'down2');
+            gInputEngine.bindKey(68, 'right2');
+            gInputEngine.bindKey(16, 'bomb2');
+
+            // Enter to confirm
+            gInputEngine.bindKey(13, 'confirm');
+            gInputEngine.bindKey(27, 'escape');
+            gInputEngine.bindKey(77, 'mute');
+
+            gInputEngine.bindGamepadButtonDown(0, 12, 'up');
+            gInputEngine.bindGamepadButtonDown(0, 13, 'down');
+            gInputEngine.bindGamepadButtonDown(0, 14, 'left');
+            gInputEngine.bindGamepadButtonDown(0, 15, 'right');
+            gInputEngine.bindGamepadButtonUp(0, 1, 'bomb');
+            gInputEngine.bindGamepadButtonUp(0, 1, 'confirm');
+
+            gInputEngine.bindGamepadButtonDown(1, 12, 'up2');
+            gInputEngine.bindGamepadButtonDown(1, 13, 'down2');
+            gInputEngine.bindGamepadButtonDown(1, 14, 'left2');
+            gInputEngine.bindGamepadButtonDown(1, 15, 'right2');
+            gInputEngine.bindGamepadButtonUp(1, 1, 'bomb2');
+            gInputEngine.bindGamepadButtonUp(1, 1, 'confirm');
+
             gInputEngine.setup();
         }
 
@@ -189,16 +180,10 @@ export class GameEngine {
         gInputEngine.addListener('escape', function() {
             if (!gGameEngine.menu.visible) {
                 // Reset canvas position
-                that.canvas.x = 0;
+                that.stage.x = 0;
                 gGameEngine.menu.show();
             }
         });
-
-        // Start loop
-        if (!createjs.Ticker.hasEventListener('tick')) {
-            createjs.Ticker.addEventListener('tick', gGameEngine.update);
-            createjs.Ticker.framerate = this.fps;
-        }
 
         if (gGameEngine.playersCount > 0) {
             if (this.soundtrackLoaded) {
@@ -206,9 +191,12 @@ export class GameEngine {
             }
         }
 
-        if (!this.playing) {
+        if (!gGameEngine.playing) {
             this.menu.show();
         }
+
+        // Start loop
+        super.setup();
     }
 
     onSoundLoaded(sound) {
@@ -220,53 +208,44 @@ export class GameEngine {
         }
     }
 
-    playSoundtrack() {
-        if (!gGameEngine.soundtrackPlaying) {
-            gGameEngine.soundtrack = createjs.Sound.play("game", {loop: -1});
-            gGameEngine.soundtrack.volume = 1;
-            gGameEngine.soundtrackPlaying = true;
-        }
-    }
-
     update() {
+        super.update();
+
         // Player
-        for (var i = 0; i < gGameEngine.players.length; i++) {
-            var player = gGameEngine.players[i];
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            const player = gGameEngine.players[i];
             player.update();
         }
 
         // Bots
-        for (var i = 0; i < gGameEngine.bots.length; i++) {
-            var bot = gGameEngine.bots[i];
+        for (let i = 0; i < gGameEngine.bots.length; i++) {
+            const bot = gGameEngine.bots[i];
             bot.update();
         }
 
         // Bombs
-        for (var i = 0; i < gGameEngine.bombs.length; i++) {
-            var bomb = gGameEngine.bombs[i];
+        for (let i = 0; i < gGameEngine.bombs.length; i++) {
+            const bomb = gGameEngine.bombs[i];
             bomb.update();
         }
 
         // Menu
         gGameEngine.menu.update();
-
-        // Canvas
-        gGameEngine.canvas.update();
     }
 
     drawTiles() {
-        for (var i = 0; i < this.tilesY; i++) {
-            for (var j = 0; j < this.tilesX; j++) {
+        for (let i = 0; i < this.tilesY; i++) {
+            for (let j = 0; j < this.tilesX; j++) {
                 if ((i === 0 || j === 0 || i === this.tilesY - 1 || j === this.tilesX - 1)
                     || (j % 2 === 0 && i % 2 === 0)) {
                     // Wall tiles
-                    var tile = new Tile(Tile.TILE_WALL, { x: j, y: i });
-                    this.canvas.addChild(tile.bmp);
+                    const tile = new Tile(Tile.TILE_WALL, { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
-                    var tile = new Tile(Tile.TILE_FLOOR, { x: j, y: i });
-                    this.canvas.addChild(tile.bmp);
+                    const tile = new Tile(Tile.TILE_FLOOR, { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
 
                     // Wood tiles
                     if (!(i <= 2 && j <= 2)
@@ -275,7 +254,7 @@ export class GameEngine {
                         && !(i >= this.tilesY - 3 && j <= 2)) {
 
                         var wood = new Tile(Tile.TILE_BLOCK, { x: j, y: i });
-                        this.canvas.addChild(wood.bmp);
+                        this.stage.addChild(wood.bmp);
                         this.tiles.push(wood);
                     }
                 }
@@ -285,9 +264,9 @@ export class GameEngine {
 
     drawPowerUps() {
         // Cache woods tiles
-        var woods = [];
-        for (var i = 0; i < this.tiles.length; i++) {
-            var tile = this.tiles[i];
+        const woods = [];
+        for (let i = 0; i < this.tiles.length; i++) {
+            const tile = this.tiles[i];
             if (tile.material === Tile.TILE_BLOCK) {
                 woods.push(tile);
             }
@@ -299,10 +278,10 @@ export class GameEngine {
         });
 
         // Distribute power ups to quarters of map precisely fairly
-        for (var j = 0; j < 4; j++) {
-            var powerUpsCount = Math.round(woods.length * this.powerUpsPercent * 0.01 / 4);
-            var placedCount = 0;
-            for (var i = 0; i < woods.length; i++) {
+        for (let j = 0; j < 4; j++) {
+            const powerUpsCount = Math.round(woods.length * this.powerUpsPercent * 0.01 / 4);
+            let placedCount = 0;
+            for (let i = 0; i < woods.length; i++) {
                 if (placedCount > powerUpsCount) {
                     break;
                 }
@@ -324,8 +303,8 @@ export class GameEngine {
             }
         }
         // Move all tiles to front
-        for (var i = this.tilesX; i < this.tiles.length; i++) {
-            var tile = this.tiles[i];
+        for (let i = this.tilesX; i < this.tiles.length; i++) {
+            const tile = this.tiles[i];
             this.moveToFront(tile.bmp);
         }
     }
@@ -333,26 +312,26 @@ export class GameEngine {
     spawnBots() {
         this.bots = [];
 
-        var botImg = gGameEngine.playerBoyImg;
-        var botImg2 = gGameEngine.playerBoy2Img;
+        const botImg = gGameEngine.imgs['playerBoyImg'];
+        const botImg2 = gGameEngine.imgs['playerBoy2Img'];
 
         if (this.botsCount >= 1) {
-            var bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
+            const bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
             this.bots.push(bot2);
         }
 
         if (this.botsCount >= 2) {
-            var bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
+            const bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            var bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, botImg);
+            const bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, botImg);
             this.bots.push(bot);
         }
 
         if (this.botsCount >= 4) {
-            var bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
+            const bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
             this.bots.push(bot);
         }
     }
@@ -361,19 +340,19 @@ export class GameEngine {
         this.players = [];
 
         if (this.playersCount >= 1) {
-            var player = new Player({ x: 1, y: 1 }, null, null, gGameEngine.playerGirlImg);
+            const player = new Player({ x: 1, y: 1 }, null, null, gGameEngine.imgs['playerGirlImg']);
             this.players.push(player);
         }
 
         if (this.playersCount >= 2) {
-            var controls = {
+            const controls = {
                 'up': 'up2',
                 'left': 'left2',
                 'down': 'down2',
                 'right': 'right2',
                 'bomb': 'bomb2'
             };
-            var player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1, gGameEngine.playerGirl2Img);
+            const player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1, gGameEngine.imgs['playerGirl2Img']);
             this.players.push(player2);
         }
     }
@@ -389,8 +368,8 @@ export class GameEngine {
      * Returns tile at given position.
      */
     getTile(position) {
-        for (var i = 0; i < this.tiles.length; i++) {
-            var tile = this.tiles[i];
+        for (let i = 0; i < this.tiles.length; i++) {
+            const tile = this.tiles[i];
             if (tile.position.x === position.x && tile.position.y === position.y) {
                 return tile;
             }
@@ -401,7 +380,7 @@ export class GameEngine {
      * Returns tile material at given position.
      */
     getTileMaterial(position) {
-        var tile = this.getTile(position);
+        const tile = this.getTile(position);
         return (tile) ? tile.material : Tile.TILE_FLOOR;
     }
 
@@ -412,10 +391,10 @@ export class GameEngine {
             this.gameOver('lose');
         }
 
-        var botsAlive = false;
+        let botsAlive = false;
 
-        for (var i = 0; i < this.bots.length; i++) {
-            var bot = this.bots[i];
+        for (let i = 0; i < this.bots.length; i++) {
+            const bot = this.bots[i];
             if (bot.alive) {
                 botsAlive = true;
             }
@@ -429,11 +408,11 @@ export class GameEngine {
     gameOver(status) {
         if (this.menu.visible) { return; }
 
-        this.canvas.x = 0;
+        this.stage.x = 0;
         if (status === 'win') {
-            var winText = "You won!";
+            let winText = "You won!";
             if (this.playersCount > 1) {
-                var winner = this.getWinner();
+                const winner = this.getWinner();
                 winText = winner === 0 ? "Player 1 won!" : "Player 2 won!";
             }
             this.menu.show([{text: winText, color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
@@ -443,8 +422,8 @@ export class GameEngine {
     }
 
     getWinner() {
-        for (var i = 0; i < gGameEngine.players.length; i++) {
-            var player = gGameEngine.players[i];
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            const player = gGameEngine.players[i];
             if (player.alive) {
                 return i;
             }
@@ -452,10 +431,10 @@ export class GameEngine {
     }
 
     restart() {
-        this.canvas.x = (640 - this.tilesX * this.tileSize) / 2;
+        this.stage.x = (640 - this.tilesX * this.tileSize) / 2;
 
         gInputEngine.removeAllListeners();
-        gGameEngine.canvas.removeAllChildren();
+        gGameEngine.stage.removeAllChildren();
         gGameEngine.setup();
     }
 
@@ -463,25 +442,13 @@ export class GameEngine {
      * Moves specified child to the front.
      */
     moveToFront(child) {
-        var children = gGameEngine.canvas.numChildren;
-        gGameEngine.canvas.setChildIndex(child, children - 1);
-    }
-
-    toggleSound() {
-        if (gGameEngine.mute) {
-            gGameEngine.mute = false;
-            gGameEngine.soundtrack.paused = false;
-            gGameEngine.soundtrack.muted = false;
-        } else {
-            gGameEngine.mute = true;
-            gGameEngine.soundtrack.paused = true;
-            gGameEngine.soundtrack.muted = true;
-        }
+        const children = gGameEngine.stage.numChildren;
+        gGameEngine.stage.setChildIndex(child, children - 1);
     }
 
     countPlayersAlive() {
-        var playersAlive = 0;
-        for (var i = 0; i < gGameEngine.players.length; i++) {
+        let playersAlive = 0;
+        for (let i = 0; i < gGameEngine.players.length; i++) {
             if (gGameEngine.players[i].alive) {
                 playersAlive++;
             }
@@ -490,13 +457,13 @@ export class GameEngine {
     }
 
     getPlayersAndBots() {
-        var players = [];
+        const players = [];
 
-        for (var i = 0; i < gGameEngine.players.length; i++) {
+        for (let i = 0; i < gGameEngine.players.length; i++) {
             players.push(gGameEngine.players[i]);
         }
 
-        for (var i = 0; i < gGameEngine.bots.length; i++) {
+        for (let i = 0; i < gGameEngine.bots.length; i++) {
             players.push(gGameEngine.bots[i]);
         }
 
@@ -515,5 +482,3 @@ export class GameEngine {
         return this.currentLevel.wallImg;
     }
 }
-
-export const gGameEngine = new GameEngine();

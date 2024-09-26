@@ -1,5 +1,5 @@
+import {gGameEngine} from "../app.js";
 import {Utils} from "./Utils.js";
-import {gGameEngine} from "./GameEngine.js";
 import {Tile} from "./Tile.js";
 import {Fire} from "./Fire.js";
 
@@ -47,7 +47,7 @@ export class Bomb {
         this.strength = strength;
 
         var spriteSheet = new createjs.SpriteSheet({
-            images: [gGameEngine.bombImg],
+            images: [gGameEngine.imgs['bombImg']],
             frames: {
                 width: this.size.w,
                 height: this.size.h,
@@ -71,7 +71,7 @@ export class Bomb {
 
         // Allow players and bots that are already on this position to escape
         var players = gGameEngine.getPlayersAndBots();
-        for (var i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             var player = players[i];
             if (Utils.comparePositions(player.position, this.position)) {
                 player.escapeBomb = this;
@@ -98,7 +98,7 @@ export class Bomb {
 
         // Fire in all directions!
         var positions = this.getDangerPositions();
-        for (var i = 0; i < positions.length; i++) {
+        for (let i = 0; i < positions.length; i++) {
             var position = positions[i];
             this.fire(position);
 
@@ -108,7 +108,7 @@ export class Bomb {
                 tile.remove();
             } else if (material === Tile.TILE_FLOOR) {
                 // Explode bombs in fire
-                for (var j = 0; j < gGameEngine.bombs.length; j++) {
+                for (let j = 0; j < gGameEngine.bombs.length; j++) {
                     var bomb = gGameEngine.bombs[j];
                     if (!bomb.exploded
                         && Utils.comparePositions(bomb.position, position)) {
@@ -116,7 +116,7 @@ export class Bomb {
                     }
                 }
                 // Destroy Power-Ups
-                for (var j = 0; j < gGameEngine.powerUps.length; j++) {
+                for (let j = 0; j < gGameEngine.powerUps.length; j++) {
                     var powerUp = gGameEngine.powerUps[j];
                     if (Utils.comparePositions(powerUp.position, position)) {
                         powerUp.destroy();
@@ -135,7 +135,7 @@ export class Bomb {
         var positions = [];
         positions.push(this.position);
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             var dirX;
             var dirY;
             if (i === 0) { dirX = 1; dirY = 0; }
@@ -143,7 +143,7 @@ export class Bomb {
             else if (i === 2) { dirX = 0; dirY = 1; }
             else if (i === 3) { dirX = 0; dirY = -1; }
 
-            for (var j = 1; j <= this.strength; j++) {
+            for (let j = 1; j <= this.strength; j++) {
                 var explode = true;
                 var last = false;
 
@@ -178,7 +178,7 @@ export class Bomb {
     }
 
     remove() {
-        gGameEngine.canvas.removeChild(this.bmp);
+        gGameEngine.stage.removeChild(this.bmp);
     }
 
     setExplodeListener(listener) {

@@ -1,6 +1,9 @@
 export class InputEngine {
 
     bindings = {};
+    bindingsGamepadUp = [];
+    bindingsGamepadDown = [];
+
     pressed = {};
     actions = {};
     listeners = [];
@@ -10,25 +13,6 @@ export class InputEngine {
     constructor() {}
 
     setup() {
-        // Keyboard bindings
-        this.bind(38, 'up');
-        this.bind(37, 'left');
-        this.bind(40, 'down');
-        this.bind(39, 'right');
-        this.bind(32, 'bomb');
-        this.bind(18, 'bomb');
-
-        this.bind(87, 'up2');
-        this.bind(65, 'left2');
-        this.bind(83, 'down2');
-        this.bind(68, 'right2');
-        this.bind(16, 'bomb2');
-
-        // Enter to confirm
-        this.bind(13, 'confirm');
-        this.bind(27, 'escape');
-        this.bind(77, 'mute');
-
         // This is needed to work inside itch.io
         window.addEventListener('keydown', this.onKeyDown.bind(this));
         window.addEventListener('keyup', this.onKeyUp.bind(this));
@@ -36,6 +20,8 @@ export class InputEngine {
         // Joystick support for two gamepads
         window.addEventListener("gamepadconnected", (event) => {
             this.gamepads[event.gamepad.index] = event.gamepad;
+            this.bindingsGamepadDown[event.gamepad.index] = {};
+            this.bindingsGamepadUp[event.gamepad.index] = {};
             console.log("Gamepad connected at index: " + event.gamepad.index);
             if (!this.joystickPolling) this.startPollingJoystick();
         });
@@ -43,12 +29,14 @@ export class InputEngine {
         window.addEventListener("gamepaddisconnected", (event) => {
             console.log("Gamepad disconnected from index: " + event.gamepad.index);
             delete this.gamepads[event.gamepad.index];
+            delete this.bindingsGamepadDown[event.gamepad.index];
+            delete this.bindingsGamepadUp[event.gamepad.index];
             if (this.gamepads.length === 0) this.stopPollingJoystick();
         });
     }
 
     onKeyDown(event) {
-        var action = this.bindings[event.keyCode];
+        const action = this.bindings[event.keyCode];
         if (action) {
             this.actions[action] = true;
             event.preventDefault();
@@ -57,7 +45,7 @@ export class InputEngine {
     }
 
     onKeyUp(event) {
-        var action = this.bindings[event.keyCode];
+        const action = this.bindings[event.keyCode];
         // Prevents action to trigger twice
         if (action && this.actions[action]) {
             this.actions[action] = false;
@@ -67,8 +55,18 @@ export class InputEngine {
         return false;
     }
 
-    bind(key, action) {
+    bindKey(key, action) {
         this.bindings[key] = action;
+    }
+
+    bindGamepadButtonDown(gamepad, key, action) {
+        this.bindingsGamepadDown[gamepad] = this.bindingsGamepadDown[gamepad] || {};
+        this.bindingsGamepadDown[gamepad][key] = action;
+    }
+
+    bindGamepadButtonUp(gamepad, key, action) {
+        this.bindingsGamepadUp[gamepad] = this.bindingsGamepadUp[gamepad] || {};
+        this.bindingsGamepadUp[gamepad][key] = action;
     }
 
     addListener(action, listener) {
@@ -77,9 +75,9 @@ export class InputEngine {
     }
 
     triggerListeners(action) {
-        var listeners = this.listeners[action];
+        const listeners = this.listeners[action];
         if (listeners) {
-            for (var i = 0; i < listeners.length; i++) {
+            for (let i = 0; i < listeners.length; i++) {
                 listeners[i]();
             }
         }
@@ -105,38 +103,30 @@ export class InputEngine {
             const gamepad = gamepads[i];
             if (!gamepad) continue;
 
-            if (i === 0) {
-                // Handling the first gamepad
-                this.triggerOnKeyDown('up', gamepad.buttons[12].pressed);
-                this.triggerOnKeyDown('down', gamepad.buttons[13].pressed);
-                this.triggerOnKeyDown('left', gamepad.buttons[14].pressed);
-                this.triggerOnKeyDown('right', gamepad.buttons[15].pressed);
-                this.triggerOnKeyUp('bomb', gamepad.buttons[1].pressed);
-                this.triggerOnKeyUp('confirm', gamepad.buttons[1].pressed);
-            } else if (i === 1) {
-                // Handling the second gamepad
-                this.triggerOnKeyDown('up2', gamepad.buttons[12].pressed);
-                this.triggerOnKeyDown('down2', gamepad.buttons[13].pressed);
-                this.triggerOnKeyDown('left2', gamepad.buttons[14].pressed);
-                this.triggerOnKeyDown('right2', gamepad.buttons[15].pressed);
-                this.triggerOnKeyUp('bomb2', gamepad.buttons[1].pressed);
-                this.triggerOnKeyUp('confirm', gamepad.buttons[1].pressed);
+            for (let button in this.bindingsGamepadDown[i]) {
+                const action = this.bindingsGamepadDown[i][button];
+                this.triggerOnKeyDown(gamepad.buttons[button].pressed, action);
+            }
+
+            for (let button in this.bindingsGamepadUp[i]) {
+                const action = this.bindingsGamepadUp[i][button];
+                this.triggerOnKeyUp(gamepad.buttons[button].pressed, action);
             }
         }
     }
 
-    triggerOnKeyDown(command, pressed) {
-        this.actions[command] = pressed;
-        this.triggerListeners(command);
+    triggerOnKeyDown(pressed, action) {
+        this.actions[action] = pressed;
+        this.triggerListeners(action);
     }
 
-    triggerOnKeyUp(command, pressed) {
+    triggerOnKeyUp(pressed, action) {
         if (pressed) {
-            this.pressed[command] = true;
+            this.pressed[action] = true;
         } else {
-            this.actions[command] = this.pressed[command];
-            this.pressed[command] = false;
-            this.triggerListeners(command);
+            this.actions[action] = this.pressed[action];
+            this.pressed[action] = false;
+            this.triggerListeners(action);
         }
     }
 }

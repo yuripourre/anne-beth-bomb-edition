@@ -1,5 +1,5 @@
 import {Player} from "./Player.js";
-import {gGameEngine} from "./GameEngine.js";
+import {gGameEngine} from "../app.js";
 import {Utils} from "./Utils.js";
 import {Tile} from "./Tile.js";
 import {Bomb} from "./Bomb.js";
@@ -108,7 +108,7 @@ export class Bot extends Player {
         // Do not go the same way if possible
         if (targets.length > 1) {
             var previousPosition = this.getPreviousPosition();
-            for (var i = 0; i < targets.length; i++) {
+            for (let i = 0; i < targets.length; i++) {
                 var item = targets[i];
                 if (item.x === previousPosition.x && item.y === previousPosition.y) {
                     targets.splice(i, 1);
@@ -153,7 +153,7 @@ export class Bot extends Player {
      */
     getPossibleTargets() {
         var targets = [];
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             var dirX;
             var dirY;
             if (i === 0) { dirX = 1; dirY = 0; }
@@ -300,7 +300,7 @@ export class Bot extends Player {
 
         if (this.bombs.length < this.bombsMax) {
             var bomb = new Bomb(this.position, this.bombStrength);
-            gGameEngine.canvas.addChild(bomb.bmp);
+            gGameEngine.stage.addChild(bomb.bmp);
             this.bombs.push(bomb);
             gGameEngine.bombs.push(bomb);
 
