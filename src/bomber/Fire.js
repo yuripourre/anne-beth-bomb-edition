@@ -1,4 +1,4 @@
-import {gGameEngine} from "./GameEngine.js";
+import {gGameEngine} from "../app.js";
 import {Utils} from "./Utils.js";
 
 export class Fire {
@@ -29,7 +29,7 @@ export class Fire {
         this.bomb = bomb;
 
         var spriteSheet = new createjs.SpriteSheet({
-            images: [gGameEngine.fireImg],
+            images: [gGameEngine.imgs['fireImg']],
             frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
             animations: {
                 idle: [0, 5, null, 0.4],
@@ -48,7 +48,7 @@ export class Fire {
         this.bmp.x = pixels.x + 2;
         this.bmp.y = pixels.y - 5;
 
-        gGameEngine.canvas.addChild(this.bmp);
+        gGameEngine.stage.addChild(this.bmp);
     }
 
     update() {
@@ -60,16 +60,16 @@ export class Fire {
             this.bomb.explodeListener = null;
         }
 
-        gGameEngine.canvas.removeChild(this.bmp);
+        gGameEngine.stage.removeChild(this.bmp);
 
-        for (var i = 0; i < this.bomb.fires.length; i++) {
+        for (let i = 0; i < this.bomb.fires.length; i++) {
             var fire = this.bomb.fires[i];
             if (this === fire) {
                 this.bomb.fires.splice(i, 1);
             }
         }
 
-        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+        for (let i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             if (this.bomb === bomb) {
                 gGameEngine.bombs.splice(i, 1);

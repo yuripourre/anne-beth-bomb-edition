@@ -1,4 +1,4 @@
-import {gGameEngine} from "./GameEngine.js";
+import {gGameEngine} from "../app.js";
 import {Utils} from "./Utils.js";
 
 export class PowerUp {
@@ -13,27 +13,27 @@ export class PowerUp {
     position = {};
     bmp = null;
     spriteIndex = 0;
-    
+
     constructor(position, spriteIndex) {
         this.type = this.types[spriteIndex];
         this.spriteIndex = spriteIndex;
-        
+
         this.position = position;
     }
 
     create() {
         var tileSize = gGameEngine.tileSize;
 
-        this.bmp = new createjs.Bitmap(gGameEngine.powerUpsImg);
+        this.bmp = new createjs.Bitmap(gGameEngine.imgs['powerUpsImg']);
         var pixels = Utils.convertToBitmapPosition(this.position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
         this.bmp.sourceRect = new createjs.Rectangle(this.spriteIndex * tileSize, 0, tileSize, tileSize);
-        gGameEngine.canvas.addChild(this.bmp);
+        gGameEngine.stage.addChild(this.bmp);
     }
 
     destroy() {
-        gGameEngine.canvas.removeChild(this.bmp);
+        gGameEngine.stage.removeChild(this.bmp);
         Utils.removeFromArray(gGameEngine.powerUps, this);
     }
 }

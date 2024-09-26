@@ -1,5 +1,5 @@
-import {gGameEngine} from "./GameEngine.js";
-import {gInputEngine} from "./InputEngine.js";
+import {gGameEngine} from "../app.js";
+import {gInputEngine} from "../InputEngine.js";
 import {Utils} from "./Utils.js";
 import {PowerUp} from "./PowerUp.js";
 import {Bot} from "./Bot.js";
@@ -90,7 +90,7 @@ export class Player {
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
 
-        gGameEngine.canvas.addChild(this.bmp);
+        gGameEngine.stage.addChild(this.bmp);
 
         this.bombs = [];
         this.setBombsListener();
@@ -102,7 +102,7 @@ export class Player {
             var that = this;
             gInputEngine.addListener(this.controls.bomb, function() {
                 // Check whether there is already bomb on this position
-                for (var i = 0; i < gGameEngine.bombs.length; i++) {
+                for (let i = 0; i < gGameEngine.bombs.length; i++) {
                     var bomb = gGameEngine.bombs[i];
                     if (Utils.comparePositions(bomb.position, that.position)) {
                         return;
@@ -110,7 +110,7 @@ export class Player {
                 }
 
                 var unexplodedBombs = 0;
-                for (var i = 0; i < that.bombs.length; i++) {
+                for (let i = 0; i < that.bombs.length; i++) {
                     if (!that.bombs[i].exploded) {
                         unexplodedBombs++;
                     }
@@ -118,7 +118,7 @@ export class Player {
 
                 if (unexplodedBombs < that.bombsMax) {
                     var bomb = new Bomb(that.position, that.bombStrength);
-                    gGameEngine.canvas.addChild(bomb.bmp);
+                    gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
                     gGameEngine.bombs.push(bomb);
 
@@ -278,7 +278,7 @@ export class Player {
             bottom: position.y + gGameEngine.tileSize,
         };
 
-        for (var i = 0; i < gGameEngine.bombs.length; i++) {
+        for (let i = 0; i < gGameEngine.bombs.length; i++) {
             var bomb = gGameEngine.bombs[i];
             // Compare bomb position
             if (this.collideTile(player, bomb.position.x, bomb.position.y)) {
@@ -302,9 +302,9 @@ export class Player {
 
     detectFireCollision() {
         var bombs = gGameEngine.bombs;
-        for (var i = 0; i < bombs.length; i++) {
+        for (let i = 0; i < bombs.length; i++) {
             var bomb = bombs[i];
-            for (var j = 0; j < bomb.fires.length; j++) {
+            for (let j = 0; j < bomb.fires.length; j++) {
                 var fire = bomb.fires[j];
                 var collision = bomb.exploded && fire.position.x === this.position.x && fire.position.y === this.position.y;
                 if (collision) {
@@ -319,7 +319,7 @@ export class Player {
      * Checks whether we have got bonus and applies it.
      */
     handlePowerUpCollision() {
-        for (var i = 0; i < gGameEngine.powerUps.length; i++) {
+        for (let i = 0; i < gGameEngine.powerUps.length; i++) {
             var powerUp = gGameEngine.powerUps[i];
             if (Utils.comparePositions(powerUp.position, this.position)) {
                 this.applyPowerUp(powerUp);
@@ -358,7 +358,7 @@ export class Player {
         this.alive = false;
 
         gGameEngine.checkGameOver();
-        
+
         // Start dead animation
         this.bmp.gotoAndPlay('dead');
         // Hides the image after some time

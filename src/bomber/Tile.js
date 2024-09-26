@@ -1,4 +1,4 @@
-import {gGameEngine} from "./GameEngine.js";
+import {gGameEngine} from "../app.js";
 import {Utils} from "./Utils.js";
 
 export class Tile {
@@ -61,8 +61,8 @@ export class Tile {
     }
 
     remove() {
-        gGameEngine.canvas.removeChild(this.bmp);
-        for (var i = 0; i < gGameEngine.tiles.length; i++) {
+        gGameEngine.stage.removeChild(this.bmp);
+        for (let i = 0; i < gGameEngine.tiles.length; i++) {
             var tile = gGameEngine.tiles[i];
             if (this === tile) {
                 gGameEngine.tiles.splice(i, 1);

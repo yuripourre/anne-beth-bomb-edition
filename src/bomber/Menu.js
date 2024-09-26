@@ -1,10 +1,10 @@
-import {gInputEngine} from "./InputEngine.js";
-import {gGameEngine} from "./GameEngine.js";
+import {gInputEngine} from "../InputEngine.js";
+import {gGameEngine} from "../app.js";
 
 export class Menu {
     static MODE_SINGLE = 'single';
     static MODE_MULTI = 'multi'
-  
+
     static HIGHLIGHT_COLOR = "rgba(255, 255, 255, 0.3)";
     static DISABLED_COLOR = "rgba(0, 0, 0, 0.5)";
 
@@ -38,8 +38,8 @@ export class Menu {
     hide() {
         this.visible = false;
 
-        for (var i = 0; i < this.views.length; i++) {
-            gGameEngine.canvas.removeChild(this.views[i]);
+        for (let i = 0; i < this.views.length; i++) {
+            gGameEngine.stage.removeChild(this.views[i]);
         }
 
         this.views = [];
@@ -47,7 +47,7 @@ export class Menu {
 
     update() {
         if (this.visible) {
-            for (var i = 0; i < this.views.length; i++) {
+            for (let i = 0; i < this.views.length; i++) {
                 gGameEngine.moveToFront(this.views[i]);
             }
 
@@ -120,13 +120,13 @@ export class Menu {
         var that = this;
 
         var bgImage = new createjs.Bitmap("static/img/ui/menu.jpg");
-        gGameEngine.canvas.addChild(bgImage);
+        gGameEngine.stage.addChild(bgImage);
         this.views.push(bgImage);
 
         // semi-transparent black background
         var bgGraphics = new createjs.Graphics().beginFill(Menu.DISABLED_COLOR).drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
-        gGameEngine.canvas.addChild(bg);
+        gGameEngine.stage.addChild(bg);
         this.views.push(bg);
 
         const title = {text: 'Anne Beth', color: '#ffffff'};
@@ -150,12 +150,12 @@ export class Menu {
 
         title1.x = gGameEngine.size.w / 2 - titleWidth / 2;
         title1.y = gGameEngine.size.h / 2 - title1.getMeasuredHeight() / 2 - offset;
-        gGameEngine.canvas.addChild(title1);
+        gGameEngine.stage.addChild(title1);
         this.views.push(title1);
 
         title2.x = gGameEngine.size.w / 2 - subTitleWidth / 2;
         title2.y = gGameEngine.size.h / 2 - title2.getMeasuredHeight() / 2 - (offset - 30);
-        gGameEngine.canvas.addChild(title2);
+        gGameEngine.stage.addChild(title2);
         this.views.push(title2);
 
         // modes buttons
@@ -170,7 +170,7 @@ export class Menu {
         singleBgGraphics.drawRect(singleX, modesY, modeSize, modeSize);
 
         var singleBg = new createjs.Shape(singleBgGraphics);
-        gGameEngine.canvas.addChild(singleBg);
+        gGameEngine.stage.addChild(singleBg);
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
@@ -193,17 +193,17 @@ export class Menu {
         singleTitle2.y = singleTitle1.y;
 
         var multiTitle1Border = this.createBorder(singleTitle1);
-        gGameEngine.canvas.addChild(multiTitle1Border);
+        gGameEngine.stage.addChild(multiTitle1Border);
         this.views.push(multiTitle1Border);
 
         var multiTitle2Border = this.createBorder(singleTitle2);
-        gGameEngine.canvas.addChild(multiTitle2Border);
+        gGameEngine.stage.addChild(multiTitle2Border);
         this.views.push(multiTitle2Border);
 
-        gGameEngine.canvas.addChild(singleTitle1);
+        gGameEngine.stage.addChild(singleTitle1);
         this.views.push(singleTitle1);
 
-        gGameEngine.canvas.addChild(singleTitle2);
+        gGameEngine.stage.addChild(singleTitle2);
         this.views.push(singleTitle2);
 
         var iconsY = modesY + 23;
@@ -211,7 +211,7 @@ export class Menu {
         singleIcon.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
         singleIcon.x = singleX + (modeSize - 32) / 2;
         singleIcon.y = iconsY;
-        gGameEngine.canvas.addChild(singleIcon);
+        gGameEngine.stage.addChild(singleIcon);
         this.views.push(singleIcon);
 
         // multiplayer button
@@ -221,7 +221,7 @@ export class Menu {
         multiBgGraphics.drawRect(multiX, modesY, modeSize, modeSize);
 
         var multiBg = new createjs.Shape(multiBgGraphics);
-        gGameEngine.canvas.addChild(multiBg);
+        gGameEngine.stage.addChild(multiBg);
         this.views.push(multiBg);
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
@@ -239,36 +239,36 @@ export class Menu {
 
         multiTitle1.x = multiX + (modeSize - multiTitleWidth) / 2;
         multiTitle1.y = modeTitlesY;
-        
+
         multiTitle2.x = multiTitle1.x + multiTitle1.getMeasuredWidth();
         multiTitle2.y = modeTitlesY;
-        
+
         var multiTitle1Border = this.createBorder(multiTitle1);
-        gGameEngine.canvas.addChild(multiTitle1Border);
+        gGameEngine.stage.addChild(multiTitle1Border);
         this.views.push(multiTitle1Border);
 
         var multiTitle2Border = this.createBorder(multiTitle2);
-        gGameEngine.canvas.addChild(multiTitle2Border);
+        gGameEngine.stage.addChild(multiTitle2Border);
         this.views.push(multiTitle2Border);
 
-        gGameEngine.canvas.addChild(multiTitle1);
+        gGameEngine.stage.addChild(multiTitle1);
         this.views.push(multiTitle1);
-        
-        gGameEngine.canvas.addChild(multiTitle2);
+
+        gGameEngine.stage.addChild(multiTitle2);
         this.views.push(multiTitle2);
 
         var multiIconPrincess = new createjs.Bitmap("static/img/chars/princess.png");
         multiIconPrincess.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
         multiIconPrincess.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
         multiIconPrincess.y = iconsY - 4;
-        gGameEngine.canvas.addChild(multiIconPrincess);
+        gGameEngine.stage.addChild(multiIconPrincess);
         this.views.push(multiIconPrincess);
 
         var multiIconWitch = new createjs.Bitmap("static/img/chars/witch.png");
         multiIconWitch.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
         multiIconWitch.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
         multiIconWitch.y = iconsY;
-        gGameEngine.canvas.addChild(multiIconWitch);
+        gGameEngine.stage.addChild(multiIconWitch);
         this.views.push(multiIconWitch);
 
         this.updateModes();
@@ -277,13 +277,13 @@ export class Menu {
     showLoader() {
         var bgGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
-        gGameEngine.canvas.addChild(bg);
+        gGameEngine.stage.addChild(bg);
 
         var loadingText = new createjs.Text("Loading...", "20px Helvetica", "#FFFFFF");
         loadingText.x = gGameEngine.size.w / 2 - loadingText.getMeasuredWidth() / 2;
         loadingText.y = gGameEngine.size.h / 2 - loadingText.getMeasuredHeight() / 2;
-        gGameEngine.canvas.addChild(loadingText);
-        gGameEngine.canvas.update();
+        gGameEngine.stage.addChild(loadingText);
+        gGameEngine.stage.update();
     }
 
     updateModes() {

@@ -1,4 +1,4 @@
-import {gGameEngine} from "./GameEngine.js";
+import {gGameEngine} from "../app.js";
 
 export class Utils {
 
@@ -8,7 +8,6 @@ export class Utils {
     static comparePositions(pos1, pos2) {
         return pos1.x === pos2.x && pos1.y === pos2.y;
     };
-
 
     /**
      * Convert bitmap pixels position to entity on grid position.
@@ -34,7 +33,7 @@ export class Utils {
      * Removes an item from array.
      */
     static removeFromArray(array, item) {
-        for (var i = 0; i < array.length; i++) {
+        for (let i = 0; i < array.length; i++) {
             if (item === array[i]) {
                 array.splice(i, 1);
             }
