@@ -60,13 +60,14 @@ export class TileMapExample extends Engine {
         if (tileLayer) {
             //const tilesX = tileLayer.width;
             //const tilesY = tileLayer.height;
-            const tilesX = this.tilesX;
-            const tilesY = this.tilesY;
+            const tilesX = this.tilesX + 2;
+            const tilesY = this.tilesY + 2;
 
             // Loop over the tile layer data and create shapes
             for (let r = 0; r < tilesY; r++) {
                 for (let c = 0; c < tilesX; c++) {
                     // We need to use the layer width to calculate the tile index
+                    //const tileIndex = (r - 1) * tileLayer.width + (c - 1);
                     const tileIndex = r * tileLayer.width + c;
                     const tileId = tileLayer.data[tileIndex];
                     const tileType = this.getTileType(tileId); // Get the tile type/color
@@ -134,15 +135,39 @@ export class TileMapExample extends Engine {
 
         const tileLayer = this.tileMapData.layers.find(layer => layer.type === 'tilelayer');
 
+        if (this.character.x < 0) {
+            this.character.x = 0;
+            return;
+        }
+
+        if (this.character.y < 0) {
+            this.character.y = 0;
+            return;
+        }
+
+        if (this.character.x + this.size.x > (tileLayer.width - 2) * this.tileSize) {
+            this.character.x -= dx;
+            return;
+        }
+
+        if (this.character.y + this.size.h > (tileLayer.height - 2) * this.tileSize) {
+            this.character.y -= dy;
+            return;
+        }
+
         // Update tile positions
-        for (let r = 0; r < this.tilesY; r++) {
-            for (let c = 0; c < this.tilesX; c++) {
+        const tilesX = this.tilesX + 2;
+        const tilesY = this.tilesY + 2;
+
+        for (let r = 0; r < tilesY; r++) {
+            for (let c = 0; c < tilesX; c++) {
                 // We need to use the layer width to calculate the tile index
                 const tileIndex = (r + py) * tileLayer.width + c + px;
+                
                 const tileId = tileLayer.data[tileIndex];
                 const tileType = this.getTileType(tileId); // Get the tile type/color
 
-                const spriteIndex = r * this.tilesX + c;
+                const spriteIndex = r * tilesX + c;
                 const tileSprite = this.tiles[spriteIndex];
                 // Clear previous graphics
                 //tileSprite.graphics.clear();
