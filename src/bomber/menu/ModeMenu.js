@@ -5,9 +5,9 @@ import {PartyMenu} from "./PartyMenu.js";
 
 export class ModeMenu extends BaseMenu {
 
-    mode = BomberGame.MODE_STORY;
+    mode = BomberGame.MODE_SURVIVAL;
     modeIndex = 0;
-    modes = [BomberGame.MODE_STORY, BomberGame.MODE_BATTLE];
+    modes = [BomberGame.MODE_SURVIVAL, BomberGame.MODE_BATTLE];
 
     storyBgFillCommand = null;
     battleBgFillCommand = null;
@@ -39,8 +39,8 @@ export class ModeMenu extends BaseMenu {
     setMode(mode) {
         this.hide();
 
-        if (mode === BomberGame.MODE_STORY) {
-            gGameEngine.gameMode = BomberGame.MODE_STORY;
+        if (mode === BomberGame.MODE_SURVIVAL) {
+            gGameEngine.gameMode = BomberGame.MODE_SURVIVAL;
         } else {
             gGameEngine.gameMode = BomberGame.MODE_BATTLE;
         }
@@ -108,14 +108,14 @@ export class ModeMenu extends BaseMenu {
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
-            that.setMode(BomberGame.MODE_STORY);
+            that.setMode(BomberGame.MODE_SURVIVAL);
         });
         singleBg.addEventListener('mouseover', function() {
-            that.mode = BomberGame.MODE_STORY;
+            that.mode = BomberGame.MODE_SURVIVAL;
             that.updateModes();
         });
 
-        var singleTitle1 = new createjs.Text("story", "16px Helvetica", "#ff4444");
+        var singleTitle1 = new createjs.Text("survival", "16px Helvetica", "#ff4444");
         var singleTitle2 = new createjs.Text("mode", "16px Helvetica", "#ffffff");
         var singleTitleWidth = singleTitle1.getMeasuredWidth() + singleTitle2.getMeasuredWidth();
         var modeTitlesY = modesY + modeSize - singleTitle1.getMeasuredHeight() - 20;
@@ -191,14 +191,14 @@ export class ModeMenu extends BaseMenu {
         gGameEngine.stage.addChild(multiTitle2);
         this.views.push(multiTitle2);
 
-        var multiIconPrincess = new createjs.Bitmap("static/img/chars/princess.png");
+        var multiIconPrincess = new createjs.Bitmap("static/img/chars/skull.png");
         multiIconPrincess.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
         multiIconPrincess.x = multiX + (modeSize - 32) / 2 + 32 / 2 - 8;
         multiIconPrincess.y = iconsY - 4;
         gGameEngine.stage.addChild(multiIconPrincess);
         this.views.push(multiIconPrincess);
 
-        var multiIconWitch = new createjs.Bitmap("static/img/chars/witch.png");
+        var multiIconWitch = new createjs.Bitmap("static/img/chars/skull.png");
         multiIconWitch.sourceRect = new createjs.Rectangle(0, 0, 32, 32);
         multiIconWitch.x = multiX + (modeSize - 32) / 2 - 32 / 2 + 8;
         multiIconWitch.y = iconsY;
@@ -210,7 +210,7 @@ export class ModeMenu extends BaseMenu {
 
     updateModes() {
         // Change background color
-        if (this.mode === BomberGame.MODE_STORY) {
+        if (this.mode === BomberGame.MODE_SURVIVAL) {
             this.storyBgFillCommand.style = BaseMenu.HIGHLIGHT_COLOR;
             this.battleBgFillCommand.style = BaseMenu.DISABLED_COLOR;
         } else {

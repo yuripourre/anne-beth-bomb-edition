@@ -9,11 +9,10 @@ import { PowerUp } from "./PowerUp.js";
 import { Engine } from "../Engine.js";
 import { AlignedBot } from "./ai/AlignedBot.js";
 import { StoryLevelGenerator } from "./StoryLevelGenerator.js";
-//import { PartyMenu } from "./menu/PartyMenu.js";
 
 export class BomberGame extends Engine {
 
-    static MODE_STORY = "story";
+    static MODE_SURVIVAL = "story";
     static MODE_BATTLE = "battle";
 
     tileSize = 32;
@@ -64,8 +63,10 @@ export class BomberGame extends Engine {
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
 
         queue.addEventListener("complete", function () {
-            that.imgs['charSkullImg'] = queue.getResult("charSkull");
+            that.imgs['charDarkMageImg'] = queue.getResult("charDarkMage");
             that.imgs['charGoblinImg'] = queue.getResult("charGoblin");
+            that.imgs['charSkullImg'] = queue.getResult("charSkull");
+            that.imgs['charPumpkinImg'] = queue.getResult("charPumpkin");
             that.imgs['playerGirlImg'] = queue.getResult("playerGirl");
             that.imgs['playerGirl2Img'] = queue.getResult("playerGirl2");
             that.imgs['bombImg'] = queue.getResult("bomb");
@@ -85,7 +86,10 @@ export class BomberGame extends Engine {
 
         var manifest = [
             { id: "charSkull", src: "static/img/chars/skull.png" },
+            { id: "charDarkMage", src: "static/img/chars/dark_mage.png" },
             { id: "charGoblin", src: "static/img/chars/goblin.png" },
+            { id: "charPurpleGoblin", src: "static/img/chars/purple_goblin.png" },
+            { id: "charPumpkin", src: "static/img/chars/pumpkin.png" },
             { id: "playerGirl", src: "static/img/chars/witch.png" },
             { id: "playerGirl2", src: "static/img/chars/princess.png" },
             { id: "bomb", src: "static/img/bomb.png" },
@@ -345,26 +349,6 @@ export class BomberGame extends Engine {
         if (this.botsCount >= 4) {
             const bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
             this.bots.push(bot);
-        }
-    }
-
-    spawnMonsters() {
-        // This should change based on level
-        this.bots = [];
-
-        const botImg = gGameEngine.imgs['charGoblinImg'];
-        const botImg2 = gGameEngine.imgs['charGoblinImg'];
-
-        if (this.botsCount >= 1) {
-            const bot2 = new AlignedBot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
-            bot2.velocity = 1;
-            this.bots.push(bot2);
-        }
-
-        if (this.botsCount >= 2) {
-            const bot3 = new AlignedBot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
-            bot3.velocity = 1;
-            this.bots.push(bot3);
         }
     }
 

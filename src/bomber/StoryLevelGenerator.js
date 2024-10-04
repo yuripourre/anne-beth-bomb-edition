@@ -1,6 +1,8 @@
 import { gGameEngine } from "../app.js";
 import { Tile } from "./Tile.js";
 import { PowerUp } from "./PowerUp.js";
+import { AlignedBot } from "./ai/AlignedBot.js";
+import { RandomBot } from "./ai/RandomBot.js";
 
 export class StoryLevelGenerator {
 
@@ -8,7 +10,7 @@ export class StoryLevelGenerator {
         console.log("Spawning monsters");
         StoryLevelGenerator.drawTiles();
         StoryLevelGenerator.drawPowerUps();
-        gGameEngine.spawnMonsters();
+        StoryLevelGenerator.spawnMonsters();
     }
     
     static drawTiles() {
@@ -87,6 +89,26 @@ export class StoryLevelGenerator {
         for (let i = gGameEngine.tilesX; i < gGameEngine.tiles.length; i++) {
             const tile = gGameEngine.tiles[i];
             gGameEngine.moveToFront(tile.bmp);
+        }
+    }
+
+    static spawnMonsters() {
+        // This should change based on level
+        gGameEngine.bots = [];
+
+        const botImg = gGameEngine.imgs['charGoblinImg'];
+        const botImg2 = gGameEngine.imgs['charSkullImg'];
+
+        if (gGameEngine.botsCount >= 1) {
+            const bot2 = new AlignedBot({ x: 1, y: gGameEngine.tilesY - 2 }, null, null, botImg);
+            bot2.velocity = 1;
+            gGameEngine.bots.push(bot2);
+        }
+
+        if (gGameEngine.botsCount >= 2) {
+            const bot3 = new RandomBot({ x: gGameEngine.tilesX - 2, y: 1 }, null, null, botImg2);
+            bot3.velocity = 1;
+            gGameEngine.bots.push(bot3);
         }
     }
 }

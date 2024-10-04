@@ -38,7 +38,6 @@ export class AlignedBot extends Bot {
         if (!this.wait) {
             this.moveToTargetPosition();
         }
-        this.handlePowerUpCollision();
 
         if (this.detectFireCollision()) {
             this.die();
