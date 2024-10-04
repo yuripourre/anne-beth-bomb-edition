@@ -1,7 +1,7 @@
-import {Utils} from "../Utils";
-import {Bot} from "../Bot";
+import {Utils} from "../Utils.js";
+import {Bot} from "../Bot.js";
 
-class AlignedBot extends Bot {
+export class AlignedBot extends Bot {
     constructor(position, controls, id, img) {
         super(position, controls, id, img);
     }

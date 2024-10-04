@@ -30,3 +30,4 @@ Credits
 [Alternate LPC Character Sprites by George](http://opengameart.org/content/alternate-lpc-character-sprites-george)<br>
 [One More LPC Alternate Character by Radomir Dopieralski](http://opengameart.org/content/one-more-lpc-alternate-character)<br>
 [Explosion Sound Effect by Adrian Gallant](http://www.flashkit.com/soundfx/Cartoon/Explosions/Explosio-Adrian_G-7936)
+[Menu Button Sound by Rusu Gabriel](https://pixabay.com/users/skyscraper_seven-43500092/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=203594)

@@ -1,6 +1,7 @@
-import {Utils} from "../Utils";
+import {Bot} from "../Bot.js";
+import {Utils} from "../Utils.js";
 
-class ChaseBot extends Bot {
+export class ChaseBot extends Bot {
     constructor(position, controls, id, img) {
         super(position, controls, id, img);
     }

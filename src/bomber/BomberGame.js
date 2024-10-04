@@ -1,20 +1,28 @@
-import {gGameEngine} from "../app.js";
-import {gInputEngine} from "../InputEngine.js";
-import {Tile} from "./Tile.js";
-import {Level} from "./Level.js";
-import {Bot} from "./Bot.js";
-import {Player} from "./Player.js";
-import {Menu} from "./Menu.js";
-import {PowerUp} from "./PowerUp.js";
-import {Engine} from "../Engine.js";
+import { gGameEngine } from "../app.js";
+import { gInputEngine } from "../InputEngine.js";
+import { Tile } from "./Tile.js";
+import { Level } from "./Level.js";
+import { Bot } from "./Bot.js";
+import { Player } from "./Player.js";
+import { ModeMenu } from "./menu/ModeMenu.js";
+import { PowerUp } from "./PowerUp.js";
+import { Engine } from "../Engine.js";
+import { AlignedBot } from "./ai/AlignedBot.js";
+import { StoryLevelGenerator } from "./StoryLevelGenerator.js";
+//import { PartyMenu } from "./menu/PartyMenu.js";
 
 export class BomberGame extends Engine {
+
+    static MODE_STORY = "story";
+    static MODE_BATTLE = "battle";
+
     tileSize = 32;
     tilesX = 17;
     tilesY = 11;
 
     menu = null;
 
+    gameMode = BomberGame.MODE_BATTLE;
     botsCount = 2; /* 0 - 3 */
     playersCount = 2; /* 1 - 2 */
     powerUpsPercent = 16;
@@ -55,9 +63,9 @@ export class BomberGame extends Engine {
         this.levels.push(new Level("original", "static/img/levels/original/tile_wood.png", "static/img/levels/original/tile_grass.png", "static/img/levels/original/tile_wall.png"));
         this.levels.push(new Level("bricks", "static/img/levels/bricks/wood.png", "static/img/levels/bricks/bricks.png", "static/img/levels/bricks/stone.png"));
 
-        queue.addEventListener("complete", function() {
-            that.imgs['playerBoyImg'] = queue.getResult("playerBoy");
-            that.imgs['playerBoy2Img'] = queue.getResult("playerBoy2");
+        queue.addEventListener("complete", function () {
+            that.imgs['charSkullImg'] = queue.getResult("charSkull");
+            that.imgs['charGoblinImg'] = queue.getResult("charGoblin");
             that.imgs['playerGirlImg'] = queue.getResult("playerGirl");
             that.imgs['playerGirl2Img'] = queue.getResult("playerGirl2");
             that.imgs['bombImg'] = queue.getResult("bomb");
@@ -76,23 +84,23 @@ export class BomberGame extends Engine {
         });
 
         var manifest = [
-            {id: "playerBoy", src: "static/img/chars/skull.png"},
-            {id: "playerBoy2", src: "static/img/chars/skull.png"},
-            {id: "playerGirl", src: "static/img/chars/witch.png"},
-            {id: "playerGirl2", src: "static/img/chars/princess.png"},
-            {id: "bomb", src: "static/img/bomb.png"},
-            {id: "fire", src: "static/img/fire.png"},
-            {id: "powerups", src: "static/img/powerups.png"},
-            {id: "menu", src: "static/img/ui/menu.jpg"},
+            { id: "charSkull", src: "static/img/chars/skull.png" },
+            { id: "charGoblin", src: "static/img/chars/goblin.png" },
+            { id: "playerGirl", src: "static/img/chars/witch.png" },
+            { id: "playerGirl2", src: "static/img/chars/princess.png" },
+            { id: "bomb", src: "static/img/bomb.png" },
+            { id: "fire", src: "static/img/fire.png" },
+            { id: "powerups", src: "static/img/powerups.png" },
+            { id: "menu", src: "static/img/ui/menu.jpg" },
         ];
 
         // Add level images to manifest
         for (let l = 0; l < that.levels.length; l++) {
             var level = that.levels[l];
 
-            manifest.push({id: `${level.name}_tile_block`, src: level.blockFile});
-            manifest.push({id: `${level.name}_tile_floor`, src: level.floorFile});
-            manifest.push({id: `${level.name}_tile_wall`, src: level.wallFile});
+            manifest.push({ id: `${level.name}_tile_block`, src: level.blockFile });
+            manifest.push({ id: `${level.name}_tile_floor`, src: level.floorFile });
+            manifest.push({ id: `${level.name}_tile_wall`, src: level.wallFile });
         }
 
         queue.loadManifest(manifest);
@@ -104,7 +112,7 @@ export class BomberGame extends Engine {
         createjs.Sound.registerSound("static/sound/game.ogg", "game");
 
         // Create menu
-        this.menu = new Menu();
+        this.menu = new ModeMenu();
     }
 
     setup() {
@@ -144,19 +152,23 @@ export class BomberGame extends Engine {
             gInputEngine.setup();
         }
 
+        // Reset bombs, tiles and power ups
         this.bombs = [];
         this.tiles = [];
         this.powerUps = [];
 
-        // Get a random level
+        // Get a random level theme
         var levelIndex = Math.floor(Math.random() * this.levels.length);
         this.currentLevel = this.levels[levelIndex];
 
-        // Draw tiles
-        this.drawTiles();
-        this.drawPowerUps();
-
-        this.spawnBots();
+        if (this.gameMode == BomberGame.MODE_BATTLE) {
+            // Draw tiles
+            this.drawTiles();
+            this.drawPowerUps();
+            this.spawnBots();
+        } else {
+            StoryLevelGenerator.generateLevel(this.currentLevel);
+        }
         this.spawnPlayers();
 
         // Toggle sound
@@ -164,8 +176,8 @@ export class BomberGame extends Engine {
 
         // Restart listener
         // Timeout because when you press enter in address bar too long, it would not show menu
-        setTimeout(function() {
-            gInputEngine.addListener('restart', function() {
+        setTimeout(function () {
+            gInputEngine.addListener('restart', function () {
                 if (gGameEngine.playersCount === 0) {
                     gGameEngine.menu.setMode('single');
                 } else {
@@ -177,7 +189,7 @@ export class BomberGame extends Engine {
 
         const that = this;
         // Escape listener
-        gInputEngine.addListener('escape', function() {
+        gInputEngine.addListener('escape', function () {
             if (!gGameEngine.menu.visible) {
                 // Reset canvas position
                 that.stage.x = 0;
@@ -273,7 +285,7 @@ export class BomberGame extends Engine {
         }
 
         // Sort tiles randomly
-        woods.sort(function() {
+        woods.sort(function () {
             return 0.5 - Math.random();
         });
 
@@ -312,8 +324,8 @@ export class BomberGame extends Engine {
     spawnBots() {
         this.bots = [];
 
-        const botImg = gGameEngine.imgs['playerBoyImg'];
-        const botImg2 = gGameEngine.imgs['playerBoy2Img'];
+        const botImg = gGameEngine.imgs['charSkullImg'];
+        const botImg2 = gGameEngine.imgs['charSkullImg'];
 
         if (this.botsCount >= 1) {
             const bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
@@ -333,6 +345,26 @@ export class BomberGame extends Engine {
         if (this.botsCount >= 4) {
             const bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
             this.bots.push(bot);
+        }
+    }
+
+    spawnMonsters() {
+        // This should change based on level
+        this.bots = [];
+
+        const botImg = gGameEngine.imgs['charGoblinImg'];
+        const botImg2 = gGameEngine.imgs['charGoblinImg'];
+
+        if (this.botsCount >= 1) {
+            const bot2 = new AlignedBot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
+            bot2.velocity = 1;
+            this.bots.push(bot2);
+        }
+
+        if (this.botsCount >= 2) {
+            const bot3 = new AlignedBot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
+            bot3.velocity = 1;
+            this.bots.push(bot3);
         }
     }
 
@@ -415,9 +447,9 @@ export class BomberGame extends Engine {
                 const winner = this.getWinner();
                 winText = winner === 0 ? "Player 1 won!" : "Player 2 won!";
             }
-            this.menu.show([{text: winText, color: '#669900'}, {text: ' ;D', color: '#99CC00'}]);
+            this.menu.show([{ text: winText, color: '#669900' }, { text: ' ;D', color: '#99CC00' }]);
         } else {
-            this.menu.show([{text: 'Game Over', color: '#CC0000'}, {text: ' :(', color: '#FF4444'}]);
+            this.menu.show([{ text: 'Game Over', color: '#CC0000' }, { text: ' :(', color: '#FF4444' }]);
         }
     }
 

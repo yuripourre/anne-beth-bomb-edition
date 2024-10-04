@@ -1,81 +1,25 @@
-import {gInputEngine} from "../InputEngine.js";
-import {gGameEngine} from "../app.js";
+import {gGameEngine} from "../../app.js";
+import { BomberGame } from "../BomberGame.js";
+import {BaseMenu} from "./BaseMenu.js";
+import {PartyMenu} from "./PartyMenu.js";
 
-export class Menu {
-    static MODE_SINGLE = 'single';
-    static MODE_MULTI = 'multi'
+export class ModeMenu extends BaseMenu {
 
-    static HIGHLIGHT_COLOR = "rgba(255, 255, 255, 0.3)";
-    static DISABLED_COLOR = "rgba(0, 0, 0, 0.5)";
-
-    mode = Menu.MODE_SINGLE;
+    mode = BomberGame.MODE_STORY;
     modeIndex = 0;
-    modes = [Menu.MODE_SINGLE, Menu.MODE_MULTI];
+    modes = [BomberGame.MODE_STORY, BomberGame.MODE_BATTLE];
 
-    visible = true;
-
-    views = [];
-
-    singleBgFillCommand = null;
-    multiBgFillCommand = null;
+    storyBgFillCommand = null;
+    battleBgFillCommand = null;
 
     nextPressed = false;
     prevPressed = false;
 
     constructor() {
-        gGameEngine.botsCount = 4;
-        gGameEngine.playersCount = 0;
-
+        super();
+        
         this.showLoader();
-    }
-
-    show(text) {
         this.visible = true;
-
-        this.draw(text);
-    }
-
-    hide() {
-        this.visible = false;
-
-        for (let i = 0; i < this.views.length; i++) {
-            gGameEngine.stage.removeChild(this.views[i]);
-        }
-
-        this.views = [];
-    }
-
-    update() {
-        if (this.visible) {
-            for (let i = 0; i < this.views.length; i++) {
-                gGameEngine.moveToFront(this.views[i]);
-            }
-
-            if (gInputEngine.actions['confirm']) {
-                this.setMode(this.mode);
-                this.nextPressed = true;
-            }
-            // Throttling
-            if (this.nextPressed) {
-                if (!gInputEngine.actions['right']) {
-                    // Release the button
-                    this.nextPressed = false;
-                }
-            } else if (gInputEngine.actions['right']) {
-                this.nextPressed = true;
-                this.nextOption();
-            }
-
-            if (this.prevPressed) {
-                if (!gInputEngine.actions['left']) {
-                    // Release the button
-                    this.prevPressed = false;
-                }
-            } else if (gInputEngine.actions['left']) {
-                this.prevPressed = true;
-                this.prevOption();
-            }
-        }
     }
 
     nextOption() {
@@ -92,28 +36,18 @@ export class Menu {
         this.updateModes();
     }
 
-    setHandCursor(btn) {
-        btn.addEventListener('mouseover', function() {
-            document.body.style.cursor = 'pointer';
-        });
-        btn.addEventListener('mouseout', function() {
-            document.body.style.cursor = 'auto';
-        });
-    }
-
     setMode(mode) {
         this.hide();
 
-        if (mode === Menu.MODE_SINGLE) {
-            gGameEngine.botsCount = 3;
-            gGameEngine.playersCount = 1;
+        if (mode === BomberGame.MODE_STORY) {
+            gGameEngine.gameMode = BomberGame.MODE_STORY;
         } else {
-            gGameEngine.botsCount = 2;
-            gGameEngine.playersCount = 2;
+            gGameEngine.gameMode = BomberGame.MODE_BATTLE;
         }
 
-        gGameEngine.playing = true;
-        gGameEngine.restart();
+        // Switch to the next menu
+        gGameEngine.menu = new PartyMenu();
+        gGameEngine.menu.show();
     }
 
     draw(text) {
@@ -124,7 +58,7 @@ export class Menu {
         this.views.push(bgImage);
 
         // semi-transparent black background
-        var bgGraphics = new createjs.Graphics().beginFill(Menu.DISABLED_COLOR).drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
+        var bgGraphics = new createjs.Graphics().beginFill(PartyMenu.DISABLED_COLOR).drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
         var bg = new createjs.Shape(bgGraphics);
         gGameEngine.stage.addChild(bg);
         this.views.push(bg);
@@ -166,7 +100,7 @@ export class Menu {
         // singleplayer button
         var singleX = gGameEngine.size.w / 2 - modeSize - modesDistance;
         var singleBgGraphics = new createjs.Graphics();
-        this.singleBgFillCommand = singleBgGraphics.beginFill(Menu.DISABLED_COLOR).command;
+        this.storyBgFillCommand = singleBgGraphics.beginFill(PartyMenu.DISABLED_COLOR).command;
         singleBgGraphics.drawRect(singleX, modesY, modeSize, modeSize);
 
         var singleBg = new createjs.Shape(singleBgGraphics);
@@ -174,15 +108,15 @@ export class Menu {
         this.views.push(singleBg);
         this.setHandCursor(singleBg);
         singleBg.addEventListener('click', function() {
-            that.setMode(Menu.MODE_SINGLE);
+            that.setMode(BomberGame.MODE_STORY);
         });
         singleBg.addEventListener('mouseover', function() {
-            that.mode = Menu.MODE_SINGLE;
+            that.mode = BomberGame.MODE_STORY;
             that.updateModes();
         });
 
-        var singleTitle1 = new createjs.Text("single", "16px Helvetica", "#ff4444");
-        var singleTitle2 = new createjs.Text("player", "16px Helvetica", "#ffffff");
+        var singleTitle1 = new createjs.Text("story", "16px Helvetica", "#ff4444");
+        var singleTitle2 = new createjs.Text("mode", "16px Helvetica", "#ffffff");
         var singleTitleWidth = singleTitle1.getMeasuredWidth() + singleTitle2.getMeasuredWidth();
         var modeTitlesY = modesY + modeSize - singleTitle1.getMeasuredHeight() - 20;
 
@@ -217,7 +151,7 @@ export class Menu {
         // multiplayer button
         var multiX = gGameEngine.size.w / 2 + modesDistance;
         var multiBgGraphics = new createjs.Graphics();
-        this.multiBgFillCommand = multiBgGraphics.beginFill(Menu.DISABLED_COLOR).command;
+        this.battleBgFillCommand = multiBgGraphics.beginFill(PartyMenu.DISABLED_COLOR).command;
         multiBgGraphics.drawRect(multiX, modesY, modeSize, modeSize);
 
         var multiBg = new createjs.Shape(multiBgGraphics);
@@ -225,16 +159,16 @@ export class Menu {
         this.views.push(multiBg);
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function() {
-            that.setMode(Menu.MODE_MULTI);
+            that.setMode(BomberGame.MODE_BATTLE);
         });
 
         multiBg.addEventListener('mouseover', function() {
-            that.mode = Menu.MODE_MULTI;
+            that.mode = BomberGame.MODE_BATTLE;
             that.updateModes();
         });
 
-        var multiTitle1 = new createjs.Text("multi", "16px Helvetica", "#99cc00");
-        var multiTitle2 = new createjs.Text("player", "16px Helvetica", "#ffffff");
+        var multiTitle1 = new createjs.Text("battle", "16px Helvetica", "#99cc00");
+        var multiTitle2 = new createjs.Text("mode", "16px Helvetica", "#ffffff");
         var multiTitleWidth = multiTitle1.getMeasuredWidth() + multiTitle2.getMeasuredWidth();
 
         multiTitle1.x = multiX + (modeSize - multiTitleWidth) / 2;
@@ -274,36 +208,15 @@ export class Menu {
         this.updateModes();
     }
 
-    showLoader() {
-        var bgGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, gGameEngine.size.w, gGameEngine.size.h);
-        var bg = new createjs.Shape(bgGraphics);
-        gGameEngine.stage.addChild(bg);
-
-        var loadingText = new createjs.Text("Loading...", "20px Helvetica", "#FFFFFF");
-        loadingText.x = gGameEngine.size.w / 2 - loadingText.getMeasuredWidth() / 2;
-        loadingText.y = gGameEngine.size.h / 2 - loadingText.getMeasuredHeight() / 2;
-        gGameEngine.stage.addChild(loadingText);
-        gGameEngine.stage.update();
-    }
-
     updateModes() {
         // Change background color
-        if (this.mode === Menu.MODE_SINGLE) {
-            this.singleBgFillCommand.style = Menu.HIGHLIGHT_COLOR;
-            this.multiBgFillCommand.style = Menu.DISABLED_COLOR;
+        if (this.mode === BomberGame.MODE_STORY) {
+            this.storyBgFillCommand.style = BaseMenu.HIGHLIGHT_COLOR;
+            this.battleBgFillCommand.style = BaseMenu.DISABLED_COLOR;
         } else {
-            this.singleBgFillCommand.style = Menu.DISABLED_COLOR;
-            this.multiBgFillCommand.style = Menu.HIGHLIGHT_COLOR;
+            this.storyBgFillCommand.style = BaseMenu.DISABLED_COLOR;
+            this.battleBgFillCommand.style = BaseMenu.HIGHLIGHT_COLOR;
         }
     }
 
-    createBorder(textElement) {
-        const shadowColor = "#000000";
-        var border = new createjs.Text(textElement.text, textElement.font, shadowColor);
-        border.outline = 2;
-        border.x = textElement.x;
-        border.y = textElement.y;
-
-        return border;
-    }
 }

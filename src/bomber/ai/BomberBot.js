@@ -1,14 +1,15 @@
-import {Bot} from "../Bot";
-import {Utils} from "../Utils";
+import {Bot} from "../Bot.js";
+import {Utils} from "../Utils.js";
 
 /**
+ * This bot mimics the behavior of Pontan.
  * Random Movement: Pontan moves randomly across the map and avoids obstacles.
  * Bomb Placement: Periodically places bombs as it moves. The bomb placement frequency increases when the player is nearby.
  * Obstacle Awareness: Avoids obstacles and changes direction when blocked.
  * Aggressive Mode: When the player is close, Pontan becomes more aggressive, moving faster and placing bombs more frequently.
  * Bomb Avoidance: Pontan avoids placing bombs too close to existing bombs.
  */
-class PontanEnemy extends Bot {
+export class BomberBot extends Bot {
     constructor(position, controls, id, img) {
         super(position, controls, id, img);
         this.bombCooldownMax = 300; // Time between bomb placements
