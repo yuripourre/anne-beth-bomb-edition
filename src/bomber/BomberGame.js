@@ -6,6 +6,7 @@ import { Bot } from "./Bot.js";
 import { Player } from "./Player.js";
 import { ModeMenu } from "./menu/ModeMenu.js";
 import { PowerUp } from "./PowerUp.js";
+import { Stairs } from "./Stairs.js";
 import { Engine } from "../Engine.js";
 import { AlignedBot } from "./ai/AlignedBot.js";
 import { StoryLevelGenerator } from "./StoryLevelGenerator.js";
@@ -20,6 +21,7 @@ export class BomberGame extends Engine {
     tilesY = 11;
 
     menu = null;
+    stairs = null;
 
     gameMode = BomberGame.MODE_BATTLE;
     botsCount = 2; /* 0 - 3 */
@@ -32,7 +34,9 @@ export class BomberGame extends Engine {
     bombs = [];
     powerUps = [];
     levels = [];
-    currentLevel = null;
+
+    currentLevel = 1;
+    currentLevelTheme = null;
 
     constructor() {
         super();
@@ -67,11 +71,12 @@ export class BomberGame extends Engine {
             that.imgs['charGoblinImg'] = queue.getResult("charGoblin");
             that.imgs['charSkullImg'] = queue.getResult("charSkull");
             that.imgs['charPumpkinImg'] = queue.getResult("charPumpkin");
-            that.imgs['playerGirlImg'] = queue.getResult("playerGirl");
-            that.imgs['playerGirl2Img'] = queue.getResult("playerGirl2");
+            that.imgs['playerGirlImg'] = queue.getResult("witch");
+            that.imgs['playerGirl2Img'] = queue.getResult("princess");
             that.imgs['bombImg'] = queue.getResult("bomb");
             that.imgs['fireImg'] = queue.getResult("fire");
             that.imgs['powerUpsImg'] = queue.getResult("powerups");
+            that.imgs['objectsImg'] = queue.getResult("objects");
 
             // Load levels
             for (let l = 0; l < that.levels.length; l++) {
@@ -90,11 +95,12 @@ export class BomberGame extends Engine {
             { id: "charGoblin", src: "static/img/chars/goblin.png" },
             { id: "charPurpleGoblin", src: "static/img/chars/purple_goblin.png" },
             { id: "charPumpkin", src: "static/img/chars/pumpkin.png" },
-            { id: "playerGirl", src: "static/img/chars/witch.png" },
-            { id: "playerGirl2", src: "static/img/chars/princess.png" },
+            { id: "witch", src: "static/img/chars/witch.png" },
+            { id: "princess", src: "static/img/chars/princess.png" },
             { id: "bomb", src: "static/img/bomb.png" },
             { id: "fire", src: "static/img/fire.png" },
             { id: "powerups", src: "static/img/powerups.png" },
+            { id: "objects", src: "static/img/objects/tileset.png" },
             { id: "menu", src: "static/img/ui/menu.jpg" },
         ];
 
@@ -156,6 +162,9 @@ export class BomberGame extends Engine {
             gInputEngine.setup();
         }
 
+        // Toggle sound
+        gInputEngine.addListener('mute', this.toggleSound);
+
         // Reset bombs, tiles and power ups
         this.bombs = [];
         this.tiles = [];
@@ -163,24 +172,30 @@ export class BomberGame extends Engine {
 
         // Get a random level theme
         var levelIndex = Math.floor(Math.random() * this.levels.length);
-        this.currentLevel = this.levels[levelIndex];
+        this.currentLevelTheme = this.levels[levelIndex];
 
-        if (this.gameMode == BomberGame.MODE_BATTLE) {
+        if (this.gameMode === BomberGame.MODE_BATTLE) {
             // Draw tiles
             this.drawTiles();
             this.drawPowerUps();
             this.spawnBots();
+            this.spawnPlayers();
         } else {
-            StoryLevelGenerator.generateLevel(this.currentLevel);
-        }
-        this.spawnPlayers();
+            this.stairs = new Stairs();
+            StoryLevelGenerator.generateLevel(this.currentLevelTheme);
 
-        // Toggle sound
-        gInputEngine.addListener('mute', this.toggleSound);
+            // Move or spawn players
+            if (this.currentLevel == 1) {
+                this.spawnPlayers();
+            } else {
+                this.resetPlayers();
+            }
+        }
+        
 
         // Restart listener
         // Timeout because when you press enter in address bar too long, it would not show menu
-        setTimeout(function () {
+        /* setTimeout(function () {
             gInputEngine.addListener('restart', function () {
                 if (gGameEngine.playersCount === 0) {
                     gGameEngine.menu.setMode('single');
@@ -189,7 +204,7 @@ export class BomberGame extends Engine {
                     gGameEngine.restart();
                 }
             });
-        }, 200);
+        }, 200); */
 
         const that = this;
         // Escape listener
@@ -243,6 +258,12 @@ export class BomberGame extends Engine {
         for (let i = 0; i < gGameEngine.bombs.length; i++) {
             const bomb = gGameEngine.bombs[i];
             bomb.update();
+        }
+
+        if (gGameEngine.gameMode === BomberGame.MODE_SURVIVAL) {
+            if (gGameEngine.stairs) {
+                gGameEngine.stairs.update();
+            }
         }
 
         // Menu
@@ -328,26 +349,26 @@ export class BomberGame extends Engine {
     spawnBots() {
         this.bots = [];
 
-        const botImg = gGameEngine.imgs['charSkullImg'];
-        const botImg2 = gGameEngine.imgs['charSkullImg'];
+        const skullImg = gGameEngine.imgs['charSkullImg'];
+        const darkMageImg = gGameEngine.imgs['charDarkMageImg'];
 
         if (this.botsCount >= 1) {
-            const bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, botImg);
+            const bot2 = new Bot({ x: 1, y: this.tilesY - 2 }, null, null, skullImg);
             this.bots.push(bot2);
         }
 
         if (this.botsCount >= 2) {
-            const bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, botImg2);
+            const bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, darkMageImg);
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            const bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, botImg);
+            const bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, skullImg);
             this.bots.push(bot);
         }
 
         if (this.botsCount >= 4) {
-            const bot = new Bot({ x: 1, y: 1 }, null, null, botImg);
+            const bot = new Bot({ x: 1, y: 1 }, null, null, skullImg);
             this.bots.push(bot);
         }
     }
@@ -370,6 +391,18 @@ export class BomberGame extends Engine {
             };
             const player2 = new Player({ x: this.tilesX - 2, y: this.tilesY - 2 }, controls, 1, gGameEngine.imgs['playerGirl2Img']);
             this.players.push(player2);
+        }
+    }
+
+    resetPlayers() {
+        if (this.playersCount >= 1) {
+            const playerOne = this.players[0];
+            playerOne.teleport({ x: 1, y: 1 });
+        }
+
+        if (this.playersCount >= 2) {
+            const playerTwo = this.players[1];
+            playerTwo.teleport({ x: 1, y: 1 });
         }
     }
 
@@ -401,14 +434,12 @@ export class BomberGame extends Engine {
     }
 
     checkGameOver() {
-        if (this.countPlayersAlive() === 1 && this.playersCount === 2) {
-            this.gameOver('win');
-        } else if (gGameEngine.countPlayersAlive() === 0) {
+        if (gGameEngine.countPlayersAlive() === 0) {
             this.gameOver('lose');
         }
 
         let botsAlive = false;
-
+    
         for (let i = 0; i < this.bots.length; i++) {
             const bot = this.bots[i];
             if (bot.alive) {
@@ -416,8 +447,21 @@ export class BomberGame extends Engine {
             }
         }
 
-        if (!botsAlive && this.countPlayersAlive() === 1) {
-            this.gameOver('win');
+        if (this.gameMode === BomberGame.MODE_BATTLE) {
+            if (this.countPlayersAlive() === 1 && this.playersCount === 2) {
+                this.gameOver('win');
+            }
+    
+            if (!botsAlive && this.countPlayersAlive() === 1) {
+                this.gameOver('win');
+            }
+        } else {
+            if (!botsAlive) {
+                // Open stair to next level
+                console.log(gGameEngine.stairs);
+                gGameEngine.stairs.open();
+                // TODO make sound
+            }
         }
     }
 
@@ -487,14 +531,19 @@ export class BomberGame extends Engine {
     }
 
     getLevelBlockImage() {
-        return this.currentLevel.blockImg;
+        return this.currentLevelTheme.blockImg;
     }
 
     getLevelFloorImage() {
-        return this.currentLevel.floorImg;
+        return this.currentLevelTheme.floorImg;
     }
 
     getLevelWallImage() {
-        return this.currentLevel.wallImg;
+        return this.currentLevelTheme.wallImg;
+    }
+
+    nextLevel() {
+        gGameEngine.currentLevel++;
+        gGameEngine.setup();
     }
 }

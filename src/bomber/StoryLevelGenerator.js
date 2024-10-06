@@ -1,16 +1,18 @@
 import { gGameEngine } from "../app.js";
 import { Tile } from "./Tile.js";
 import { PowerUp } from "./PowerUp.js";
+import { Stairs } from "./Stairs.js";
 import { AlignedBot } from "./ai/AlignedBot.js";
 import { RandomBot } from "./ai/RandomBot.js";
 
 export class StoryLevelGenerator {
 
     static generateLevel(theme) {
-        console.log("Spawning monsters");
+        console.log("Generating level");
         StoryLevelGenerator.drawTiles();
-        StoryLevelGenerator.drawPowerUps();
+        StoryLevelGenerator.spawnStairs();
         StoryLevelGenerator.spawnMonsters();
+        StoryLevelGenerator.drawPowerUps();
     }
     
     static drawTiles() {
@@ -90,25 +92,91 @@ export class StoryLevelGenerator {
             const tile = gGameEngine.tiles[i];
             gGameEngine.moveToFront(tile.bmp);
         }
+
+        // Move stairs to front
+        gGameEngine.moveToFront(gGameEngine.stairs.bmp);
+
+        // Move bots to front
+        for (let i = 0; i < gGameEngine.bots.length; i++) {
+            const bot = gGameEngine.bots[i];
+            gGameEngine.moveToFront(bot.bmp);
+        }
+
+        // Move players to front
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            const player = gGameEngine.players[i];
+            gGameEngine.moveToFront(player.bmp);
+        }
     }
 
     static spawnMonsters() {
         // This should change based on level
         gGameEngine.bots = [];
 
-        const botImg = gGameEngine.imgs['charGoblinImg'];
-        const botImg2 = gGameEngine.imgs['charSkullImg'];
+        const skullImg = gGameEngine.imgs['charSkullImg'];
+        const darkMageImg = gGameEngine.imgs['charDarkMageImg'];
+        const pumpkinImg = gGameEngine.imgs['charPumpkinImg'];
 
-        if (gGameEngine.botsCount >= 1) {
-            const bot2 = new AlignedBot({ x: 1, y: gGameEngine.tilesY - 2 }, null, null, botImg);
-            bot2.velocity = 1;
-            gGameEngine.bots.push(bot2);
+        if (gGameEngine.currentLevel == 1) {
+            // Create goblin
+            StoryLevelGenerator.spawnGoblin({ x: 3 + Math.floor(Math.random() * 3), y: 1 + Math.floor(Math.random() * 3) });
+            //StoryLevelGenerator.spawnGoblin({ x: gGameEngine.tilesX - 6 - Math.floor(Math.random() * 3), y: gGameEngine.tilesY - 2 - Math.floor(Math.random() * 3) });
+            
+        } else {
+            if (gGameEngine.botsCount >= 1) {
+                const bot2 = new AlignedBot({ x: 1, y: gGameEngine.tilesY - 2 }, null, null, pumpkinImg);
+                bot2.velocity = 1;
+                gGameEngine.bots.push(bot2);
+            }
+    
+            if (gGameEngine.botsCount >= 2) {
+                const bot3 = new RandomBot({ x: gGameEngine.tilesX - 2, y: 1 }, null, null, skullImg);
+                bot3.velocity = 1;
+                gGameEngine.bots.push(bot3);
+            }
+        }
+    }
+
+    static spawnGoblin(position) {
+        const goblinImg = gGameEngine.imgs['charGoblinImg'];
+
+        if (position.x % 2 == 0 && position.y % 2 == 0) {
+            position.x += 1;
         }
 
-        if (gGameEngine.botsCount >= 2) {
-            const bot3 = new RandomBot({ x: gGameEngine.tilesX - 2, y: 1 }, null, null, botImg2);
-            bot3.velocity = 1;
-            gGameEngine.bots.push(bot3);
+        const enemy = new AlignedBot(position, null, null, goblinImg);
+        enemy.velocity = 1;
+        gGameEngine.bots.push(enemy);
+
+        // Remove block tile if exists
+        for (let i = 0; i < gGameEngine.tiles.length; i++) {
+            const tile = gGameEngine.tiles[i];
+            if (tile.position.x == position.x && tile.position.y == position.y && tile.material == Tile.TILE_BLOCK) {
+                gGameEngine.stage.removeChild(tile.bmp);
+                gGameEngine.tiles.splice(i, 1);
+                break;
+            }
         }
+    }
+
+    static spawnStairs() {
+
+        const position = { x: gGameEngine.tilesX - 6 - Math.floor(Math.random() * 3),
+                     y: gGameEngine.tilesY - 2 - Math.floor(Math.random() * 3) };
+                
+        //gGameEngine.stairs = new Stairs(position);
+        gGameEngine.stairs.create();
+        gGameEngine.stairs.move(position);
+
+        // Remove block tile if exists
+        for (let i = 0; i < gGameEngine.tiles.length; i++) {
+            const tile = gGameEngine.tiles[i];
+            if (tile.position.x == position.x && tile.position.y == position.y && tile.material == Tile.TILE_BLOCK) {
+                gGameEngine.stage.removeChild(tile.bmp);
+                gGameEngine.tiles.splice(i, 1);
+                break;
+            }
+        }
+
     }
 }

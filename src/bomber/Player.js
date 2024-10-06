@@ -96,6 +96,13 @@ export class Player {
         this.setBombsListener();
     }
 
+    teleport(position) {
+        this.position = position;
+        var pixels = Utils.convertToBitmapPosition(position);
+        this.bmp.x = pixels.x;
+        this.bmp.y = pixels.y;
+    }
+
     setBombsListener() {
         // Subscribe to bombs spawning
         if (!(this instanceof Bot)) {
