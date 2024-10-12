@@ -8,6 +8,8 @@ import {Bomb} from "./Bomb.js";
 export class Player {
     id = 0;
 
+    driftVelocity = 1;
+
     /**
      * Moving speed
      */
@@ -69,8 +71,6 @@ export class Player {
             this.controls = controls;
         }
 
-        const numFrames = 3;
-
         var spriteSheet = new createjs.SpriteSheet({
             images: [img],
             frames: { width: this.size.w, height: this.size.h, regX: 0, regY: 0 },
@@ -91,7 +91,6 @@ export class Player {
         this.bmp.y = pixels.y;
 
         gGameEngine.stage.addChild(this.bmp);
-
         this.bombs = [];
         this.setBombsListener();
     }
@@ -138,115 +137,113 @@ export class Player {
     }
 
     update() {
-        if (!this.alive) {
-            return;
-        }
-        if (gGameEngine.menu.visible) {
-            return;
-        }
+        if (!this.alive || gGameEngine.menu.visible) return;
 
-        let position = { x: this.bmp.x, y: this.bmp.y };
-
-        let dirX = 0;
-        let dirY = 0;
+        let newPos = { x: this.bmp.x, y: this.bmp.y };
+        let movingX = 0;
+        let movingY = 0;
 
         if (gInputEngine.actions[this.controls.up]) {
-            this.animate('up');
-            position.y -= this.velocity;
-            dirY = -1;
-        } else if (gInputEngine.actions[this.controls.down]) {
-            this.animate('down');
-            position.y += this.velocity;
-            dirY = 1;
-        } else if (gInputEngine.actions[this.controls.left]) {
-            this.animate('left');
-            position.x -= this.velocity;
-            dirX = -1;
-        } else if (gInputEngine.actions[this.controls.right]) {
-            this.animate('right');
-            position.x += this.velocity;
-            dirX = 1;
+            movingY = -this.velocity;
+        }
+        if (gInputEngine.actions[this.controls.down]) {
+            movingY = this.velocity;
+        }
+        if (gInputEngine.actions[this.controls.left]) {
+            movingX = -this.velocity;
+        }
+        if (gInputEngine.actions[this.controls.right]) {
+            movingX = this.velocity;
+        }
+
+        // Adjust animation based on movement
+        this.updateAnimation(movingX, movingY);
+
+        // Adjust position based on inputs
+        newPos.x += movingX;
+
+        let updated = false;
+        if (!this.detectWallCollision(newPos) && !this.detectBombCollision(newPos)) {
+            this.bmp.x = newPos.x;
+            this.bmp.y = newPos.y;
+            updated = true;
         } else {
-            this.animate('idle');
+            newPos.x -= movingX;
         }
 
-        position = this.snapToGrid(position, dirX, dirY);
+        newPos.y += movingY;
 
-        if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
-            this.bmp.x = position.x;
-            this.bmp.y = position.y;
+        if (!this.detectWallCollision(newPos) && !this.detectBombCollision(newPos)) {
+            this.bmp.x = newPos.x;
+            this.bmp.y = newPos.y;
+        }
+
+        if (updated) {
+            newPos = this.snapAndDrift(newPos, movingX, movingY);
             this.updatePosition();
         }
 
-        /*if (!this.detectWallCollision(position)) {
-            position = this.snapToGrid(position, dirX, dirY);
-            this.bmp.x = position.x;
-            this.bmp.y = position.y;
-            this.updatePosition();
-        } else if (!this.detectBombCollision(position)) {
-            // Only update the position if there is no wall collision
-            this.bmp.x = position.x;
-            this.bmp.y = position.y;
-            this.updatePosition();
-        }*/
-
-        // Handle other collisions
         if (this.detectFireCollision()) {
             this.die();
         }
+
         this.handlePowerUpCollision();
     }
 
-    // Helper function to snap player to the center of a tile if near the center
-    snapToGrid(position, dirX, dirY) {
+    updateAnimation(movingX, movingY) {
+        if (movingX === 0 && movingY === 0) {
+            this.animate('idle');
+        } else if (movingY < 0) {
+            this.animate('up');
+        } else if (movingY > 0) {
+            this.animate('down');
+        } else if (movingX < 0) {
+            this.animate('left');
+        } else if (movingX > 0) {
+            this.animate('right');
+        }
+    }
+
+    snapAndDrift(position, movingX, movingY) {
         const tileSize = gGameEngine.tileSize;
-        const halfTile = tileSize / 2;
+        const centerX = Math.round(position.x / tileSize) * tileSize;
+        const centerY = Math.round(position.y / tileSize) * tileSize;
 
-        // Calculate the nearest tile center
-        const snapX = Math.round(position.x / tileSize) * tileSize;
-        const snapY = Math.round(position.y / tileSize) * tileSize;
-
-        // Only snap if within the tolerance range (near the tile center)
-        if (dirY !== 0) {
-            if (Math.abs(position.x - snapX) < halfTile) {
-                position.x = snapX;
+        // Drift horizontally
+        if (Math.abs(position.x - centerX) < tileSize / 4) {
+            if (position.x < centerX) {
+                position.x += this.driftVelocity / 2; // Apply gentle drift right
+            } else if (position.x > centerX) {
+                position.x -= this.driftVelocity / 2; // Apply gentle drift left
             }
         }
 
-        if (dirX !== 0) {
-            if (Math.abs(position.y - snapY) < halfTile) {
-                position.y = snapY;
+        // Drift vertically
+        if (Math.abs(position.y - centerY) < tileSize / 4) {
+            if (position.y < centerY) {
+                position.y += this.driftVelocity / 2; // Apply gentle drift down
+            } else if (position.y > centerY) {
+                position.y -= this.driftVelocity / 2; // Apply gentle drift up
             }
         }
 
         return position;
     }
 
-    /**
-     * Calculates and updates entity position according to its actual bitmap position
-     */
     updatePosition() {
         this.position = Utils.convertToEntityPosition(this.bmp);
     }
 
-    /**
-     * Returns true when collision is detected, and we should not move to target position.
-     */
     detectWallCollision(position) {
-        // Define the player hitbox
         const player = {
-            left: position.x,
-            top: position.y,
-            right: position.x + gGameEngine.tileSize,
-            bottom: position.y + gGameEngine.tileSize,
+            x: position.x + 1,
+            y: position.y + 1,
+            width: this.size.w - 2,
+            height: this.size.h - 2,
         };
 
-        // Check for collision with all wall tiles
         const tiles = gGameEngine.tiles;
-        for (let i = 0; i < tiles.length; i++) {
-            const tile = tiles[i];
-
-            // If the player's hitbox overlaps with a wall tile hitbox, a collision is detected
+        for (let tile of tiles) {
             if (this.collideTile(player, tile.position.x, tile.position.y)) {
                 return true;
             }
@@ -262,15 +259,12 @@ export class Player {
             bottom: (y + 1) * gGameEngine.tileSize,
         };
 
-        // If the player's hitbox overlaps with a wall tile hitbox, a collision is detected
-        if (
-            player.right > tileHitbox.left &&
-            player.left < tileHitbox.right &&
-            player.bottom > tileHitbox.top &&
-            player.top < tileHitbox.bottom
-        ) {
-            return true;
-        }
+        return (
+            player.x + player.width > tileHitbox.left &&
+            player.x < tileHitbox.right &&
+            player.y + player.height > tileHitbox.top &&
+            player.y < tileHitbox.bottom
+        );
     }
 
     /**

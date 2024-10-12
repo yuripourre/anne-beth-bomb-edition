@@ -163,15 +163,9 @@ export class InputEngine {
             this.actions['up'] = false;
             this.actions['down'] = false;
         }
-
-        console.log("up", this.actions['up']);
-        console.log("down", this.actions['down']);
-        console.log("left", this.actions['left']);
-        console.log("right", this.actions['right']);
     }
 
     showVirtualJoystick() {
-        console.log("Show virtual joystick");
         this.virtualJoystick.init();
         this.virtualJoystick.show();
     }

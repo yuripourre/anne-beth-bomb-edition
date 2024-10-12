@@ -17,7 +17,7 @@ export class VirtualJoystick {
     visible = false;
     initialized = false;
 
-    deadZone = 0.1;
+    deadZone = 0.2;
 
     init() {
         if (this.initialized) {
@@ -31,12 +31,12 @@ export class VirtualJoystick {
         createjs.Touch.enable(stage);
         
         this.joystickBase = new createjs.Shape();
-        this.joystickBase.graphics.beginFill("gray").drawCircle(0, 0, this.radius);
+        this.joystickBase.graphics.beginFill("#77777799").drawCircle(0, 0, this.radius);
         this.joystickBase.x = this.centerX;
         this.joystickBase.y = this.centerY;
 
         this.joystickKnob = new createjs.Shape();
-        this.joystickKnob.graphics.beginFill("red").drawCircle(0, 0, this.knobRadius);
+        this.joystickKnob.graphics.beginFill("#33333399").drawCircle(0, 0, this.knobRadius);
         this.joystickKnob.x = this.centerX;
         this.joystickKnob.y = this.centerY;
 
@@ -86,8 +86,6 @@ export class VirtualJoystick {
                     directionY = 0;
                 }
 
-                console.log(directionX, directionY);
-                console.log("---------------------------");
                 actor.processVirtualJoystick(directionX, directionY);
             }
         });
