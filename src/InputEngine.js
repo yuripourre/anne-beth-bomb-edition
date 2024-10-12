@@ -1,3 +1,5 @@
+import {VirtualJoystick} from "./VirtualJoystick.js";
+
 export class InputEngine {
 
     bindings = {};
@@ -9,6 +11,8 @@ export class InputEngine {
     listeners = [];
     gamepads = []; // To track multiple gamepads
     joystickPolling = null;
+
+    virtualJoystick = null;
 
     constructor() {}
 
@@ -33,6 +37,9 @@ export class InputEngine {
             delete this.bindingsGamepadUp[event.gamepad.index];
             if (this.gamepads.length === 0) this.stopPollingJoystick();
         });
+
+        this.virtualJoystick = new VirtualJoystick();
+        this.virtualJoystick.init();
     }
 
     onKeyDown(event) {
@@ -128,6 +135,45 @@ export class InputEngine {
             this.pressed[action] = false;
             this.triggerListeners(action);
         }
+    }
+
+    processVirtualJoystick(directionX, directionY) {
+        if (directionX !== 0) {
+            if (directionX > 0) {
+                this.actions['right'] = true;
+                this.actions['left'] = false;
+            } else {
+                this.actions['left'] = true;
+                this.actions['right'] = false;
+            }
+        } else {
+            this.actions['right'] = false;
+            this.actions['left'] = false;
+        }
+
+        if (directionY !== 0) {
+            if (directionY > 0) {
+                this.actions['up'] = true;
+                this.actions['down'] = false;
+            } else {
+                this.actions['down'] = true;
+                this.actions['up'] = false;
+            }
+        } else {
+            this.actions['up'] = false;
+            this.actions['down'] = false;
+        }
+
+        console.log("up", this.actions['up']);
+        console.log("down", this.actions['down']);
+        console.log("left", this.actions['left']);
+        console.log("right", this.actions['right']);
+    }
+
+    showVirtualJoystick() {
+        console.log("Show virtual joystick");
+        this.virtualJoystick.init();
+        this.virtualJoystick.show();
     }
 }
 

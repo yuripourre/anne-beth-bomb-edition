@@ -8,7 +8,7 @@ import { ModeMenu } from "./menu/ModeMenu.js";
 import { PowerUp } from "./PowerUp.js";
 import { Stairs } from "./Stairs.js";
 import { Engine } from "../Engine.js";
-import { AlignedBot } from "./ai/AlignedBot.js";
+import { Utils } from "./Utils.js";
 import { StoryLevelGenerator } from "./StoryLevelGenerator.js";
 
 export class BomberGame extends Engine {
@@ -30,7 +30,9 @@ export class BomberGame extends Engine {
 
     players = [];
     bots = [];
+    // Separate into colliding and not colliding tiles
     tiles = [];
+
     bombs = [];
     powerUps = [];
     levels = [];
@@ -192,6 +194,11 @@ export class BomberGame extends Engine {
             }
         }
         
+        if (Utils.isMobile()) {
+            // Bind actions
+            gInputEngine.showVirtualJoystick();
+            // We also need to display buttons
+        }
 
         // Restart listener
         // Timeout because when you press enter in address bar too long, it would not show menu

@@ -2,6 +2,10 @@ import {gGameEngine} from "../app.js";
 
 export class Utils {
 
+    static isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
     /**
      * Returns true if positions are equal.
      */
