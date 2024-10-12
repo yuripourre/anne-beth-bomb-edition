@@ -1,5 +1,7 @@
 import { gGameEngine } from "../app.js";
 import { gInputEngine } from "../InputEngine.js";
+import { VirtualJoystick } from "../VirtualJoystick.js";
+import { VirtualButton } from "../VirtualButton.js";
 import { Tile } from "./Tile.js";
 import { Level } from "./Level.js";
 import { Bot } from "./Bot.js";
@@ -194,10 +196,14 @@ export class BomberGame extends Engine {
             }
         }
         
-        if (Utils.isMobile()) {
-            // Bind actions
-            gInputEngine.showVirtualJoystick();
-            // We also need to display buttons
+        if (true || Utils.isMobile()) {
+            this.virtualJoystick = new VirtualJoystick();
+            this.virtualJoystick.init();
+            this.virtualJoystick.show();    
+        
+            this.virtualButton = new VirtualButton(540, 300, "bomb");
+            this.virtualButton.init();
+            this.virtualButton.show();
         }
 
         // Restart listener

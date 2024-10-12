@@ -178,10 +178,10 @@ export class Player {
             this.bmp.y = newPos.y;
         }
 
-        if (updated) {
-            newPos = this.snapAndDrift(newPos, movingX, movingY);
+        newPos = this.snapAndDrift(newPos, movingX, movingY);
+        //if (updated) {
             this.updatePosition();
-        }
+        //}
 
         if (this.detectFireCollision()) {
             this.die();
@@ -209,21 +209,24 @@ export class Player {
         const centerX = Math.round(position.x / tileSize) * tileSize;
         const centerY = Math.round(position.y / tileSize) * tileSize;
 
+        const tolerance = tileSize / 3;
+        const offset = this.driftVelocity / 2;
+
         // Drift horizontally
-        if (Math.abs(position.x - centerX) < tileSize / 4) {
+        if (Math.abs(position.x - centerX) < tolerance) {
             if (position.x < centerX) {
-                position.x += this.driftVelocity / 2; // Apply gentle drift right
+                position.x += offset; // Apply gentle drift right
             } else if (position.x > centerX) {
-                position.x -= this.driftVelocity / 2; // Apply gentle drift left
+                position.x -= offset; // Apply gentle drift left
             }
         }
 
         // Drift vertically
-        if (Math.abs(position.y - centerY) < tileSize / 4) {
+        if (Math.abs(position.y - centerY) < tolerance) {
             if (position.y < centerY) {
-                position.y += this.driftVelocity / 2; // Apply gentle drift down
+                position.y += offset; // Apply gentle drift down
             } else if (position.y > centerY) {
-                position.y -= this.driftVelocity / 2; // Apply gentle drift up
+                position.y -= offset; // Apply gentle drift up
             }
         }
 
@@ -236,10 +239,10 @@ export class Player {
 
     detectWallCollision(position) {
         const player = {
-            x: position.x + 1,
-            y: position.y + 1,
-            width: this.size.w - 2,
-            height: this.size.h - 2,
+            x: position.x + 2,
+            y: position.y + 2,
+            width: this.size.w - 4,
+            height: this.size.h - 4,
         };
 
         const tiles = gGameEngine.tiles;

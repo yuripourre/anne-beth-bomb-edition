@@ -1,5 +1,3 @@
-import {VirtualJoystick} from "./VirtualJoystick.js";
-
 export class InputEngine {
 
     bindings = {};
@@ -11,8 +9,6 @@ export class InputEngine {
     listeners = [];
     gamepads = []; // To track multiple gamepads
     joystickPolling = null;
-
-    virtualJoystick = null;
 
     constructor() {}
 
@@ -37,9 +33,6 @@ export class InputEngine {
             delete this.bindingsGamepadUp[event.gamepad.index];
             if (this.gamepads.length === 0) this.stopPollingJoystick();
         });
-
-        this.virtualJoystick = new VirtualJoystick();
-        this.virtualJoystick.init();
     }
 
     onKeyDown(event) {
@@ -165,10 +158,6 @@ export class InputEngine {
         }
     }
 
-    showVirtualJoystick() {
-        this.virtualJoystick.init();
-        this.virtualJoystick.show();
-    }
 }
 
 export const gInputEngine = new InputEngine();
