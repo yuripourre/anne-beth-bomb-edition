@@ -158,7 +158,9 @@ export class Player {
             this.animate('down');
             position.y += this.velocity;
             dirY = 1;
-        } else if (gInputEngine.actions[this.controls.left]) {
+        }
+        
+        if (gInputEngine.actions[this.controls.left]) {
             this.animate('left');
             position.x -= this.velocity;
             dirX = -1;
@@ -166,17 +168,61 @@ export class Player {
             this.animate('right');
             position.x += this.velocity;
             dirX = 1;
-        } else {
+        } 
+        
+        if (!gInputEngine.actions[this.controls.up] && !gInputEngine.actions[this.controls.down] && 
+            !gInputEngine.actions[this.controls.left] && !gInputEngine.actions[this.controls.right]) {
             this.animate('idle');
         }
 
-        position = this.snapToGrid(position, dirX, dirY);
+        const tileSize = gGameEngine.tileSize;
+        const halfTile = tileSize / 2;
 
-        if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
+        // Only snap if within the tolerance range (near the tile center)
+        if (dirX !== 0) {
+            const targetPosition = {x: position.x + dirX, y: position.y};
+            if (this.detectWallCollision(targetPosition) || 
+                this.detectBombCollision(targetPosition)) {
+                console.log("Detected wall horizontal");
+                dirX = 0;
+            } else {
+                const snapY = Math.round(position.y / tileSize) * tileSize;
+                if (Math.abs(position.y - snapY) < halfTile) {
+                    position.y = snapY;
+
+                    this.bmp.x = targetPosition.x;
+                    this.bmp.y = position.y;
+                    this.updatePosition();
+                }
+            }
+        }
+
+        if (dirY !== 0) {
+            const targetPosition = {x: position.x, y: position.y + dirY};
+            if (this.detectWallCollision(targetPosition) || 
+                this.detectBombCollision(targetPosition)) {
+                dirY = 0;
+                console.log("Detected wall vertical");
+            } else {
+                const snapX = Math.round(position.x / tileSize) * tileSize;
+                if (Math.abs(position.x - snapX) < halfTile) {
+                    position.x = snapX;
+
+                    this.bmp.x = position.x;
+                    this.bmp.y = targetPosition.y;
+                    this.updatePosition();
+                }
+            }
+        }
+
+        //position = this.snapToGrid(position, dirX, dirY);
+
+        // We should verify the wall collision in both directions (vertical and horizontal) separately
+        /* if (!this.detectWallCollision(position) && !this.detectBombCollision(position)) {
             this.bmp.x = position.x;
             this.bmp.y = position.y;
             this.updatePosition();
-        }
+        } */
 
         /*if (!this.detectWallCollision(position)) {
             position = this.snapToGrid(position, dirX, dirY);
@@ -248,6 +294,8 @@ export class Player {
 
             // If the player's hitbox overlaps with a wall tile hitbox, a collision is detected
             if (this.collideTile(player, tile.position.x, tile.position.y)) {
+                console.log("Detected wall collision");
+                console.log(position.x, position.y, tile.position.x, tile.position.y);
                 return true;
             }
         }
