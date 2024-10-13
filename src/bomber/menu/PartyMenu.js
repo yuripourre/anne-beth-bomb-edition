@@ -40,20 +40,19 @@ export class PartyMenu extends BaseMenu {
     }
 
     setMode(mode) {
-        this.hide();
-
         if (mode === PartyMenu.PARTY_SINGLE) {
-            if (gGameEngine.mode === BomberGame.MODE_BATTLE) {
+            if (gGameEngine.gameMode === BomberGame.MODE_BATTLE) {
                 gGameEngine.botsCount = 3;
             }
             gGameEngine.playersCount = 1;
         } else {
-            if (gGameEngine.mode === BomberGame.MODE_BATTLE) {
+            if (gGameEngine.gameMode === BomberGame.MODE_BATTLE) {
                 gGameEngine.botsCount = 2;
             }
             gGameEngine.playersCount = 2;
         }
 
+        this.hide();
         gGameEngine.playing = true;
         gGameEngine.restart();
     }

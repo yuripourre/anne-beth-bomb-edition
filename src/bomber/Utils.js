@@ -13,6 +13,13 @@ export class Utils {
         return pos1.x === pos2.x && pos1.y === pos2.y;
     };
 
+    static compareTilePositions(pos1, pos2) {
+        const a = Utils.convertToEntityPosition(pos1);
+        const b = Utils.convertToEntityPosition(pos2);
+
+        return this.comparePositions(a, b);
+    };
+
     /**
      * Convert bitmap pixels position to entity on grid position.
      */

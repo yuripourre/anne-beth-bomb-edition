@@ -12,6 +12,7 @@ import { Stairs } from "./Stairs.js";
 import { Engine } from "../Engine.js";
 import { Utils } from "./Utils.js";
 import { StoryLevelGenerator } from "./StoryLevelGenerator.js";
+import { PartyMenu } from "./menu/PartyMenu.js";
 
 export class BomberGame extends Engine {
 
@@ -126,7 +127,8 @@ export class BomberGame extends Engine {
         createjs.Sound.registerSound("static/sound/game.ogg", "game");
 
         // Create menu
-        this.menu = new ModeMenu();
+        //this.menu = new ModeMenu();
+        this.menu = new PartyMenu();
     }
 
     setup() {
@@ -371,12 +373,12 @@ export class BomberGame extends Engine {
         }
 
         if (this.botsCount >= 2) {
-            const bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, darkMageImg);
+            const bot3 = new Bot({ x: this.tilesX - 2, y: 1 }, null, null, skullImg);
             this.bots.push(bot3);
         }
 
         if (this.botsCount >= 3) {
-            const bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, skullImg);
+            const bot = new Bot({ x: this.tilesX - 2, y: this.tilesY - 2 }, null, null, darkMageImg);
             this.bots.push(bot);
         }
 

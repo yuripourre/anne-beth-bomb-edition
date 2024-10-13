@@ -74,6 +74,7 @@ export class Bomb {
         for (let i = 0; i < players.length; i++) {
             var player = players[i];
             if (Utils.comparePositions(player.position, this.position)) {
+            //if (Utils.compareTilePositions(player.position, this.position)) {
                 player.escapeBomb = this;
             }
         }
