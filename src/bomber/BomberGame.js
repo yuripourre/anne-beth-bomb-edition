@@ -198,7 +198,7 @@ export class BomberGame extends Engine {
             }
         }
         
-        if (true || Utils.isMobile()) {
+        if (Utils.isMobile()) {
             this.virtualJoystick = new VirtualJoystick();
             this.virtualJoystick.init();
             this.virtualJoystick.show();    
