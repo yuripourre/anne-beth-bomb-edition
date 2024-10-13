@@ -123,6 +123,7 @@ export class Player {
                 }
 
                 if (unexplodedBombs < that.bombsMax) {
+                    // Create a new bomb
                     var bomb = new Bomb(that.position, that.bombStrength);
                     gGameEngine.stage.addChild(bomb.bmp);
                     that.bombs.push(bomb);
@@ -176,12 +177,20 @@ export class Player {
         if (!this.detectWallCollision(newPos) && !this.detectBombCollision(newPos)) {
             this.bmp.x = newPos.x;
             this.bmp.y = newPos.y;
+            updated = true;
         }
 
-        newPos = this.snapAndDrift(newPos, movingX, movingY);
-        //if (updated) {
+        if (updated) {
+            newPos = this.snapAndDrift(newPos, movingX, movingY);
             this.updatePosition();
-        //}
+        }
+
+        // This is no longer an escapable bomb
+        /* if (this.escapeBomb) {
+            if (!Utils.compareTilePositions(this.position, this.escapeBomb.position)) {
+                this.escapeBomb = null;
+            }
+        } */
 
         if (this.detectFireCollision()) {
             this.die();
@@ -237,6 +246,22 @@ export class Player {
         this.position = Utils.convertToEntityPosition(this.bmp);
     }
 
+    collideTile(player, x, y) {
+        const tileHitbox = {
+            left: x * gGameEngine.tileSize,
+            top: y * gGameEngine.tileSize,
+            right: (x + 1) * gGameEngine.tileSize,
+            bottom: (y + 1) * gGameEngine.tileSize,
+        };
+
+        return (
+            player.x + player.width > tileHitbox.left &&
+            player.x < tileHitbox.right &&
+            player.y + player.height > tileHitbox.top &&
+            player.y < tileHitbox.bottom
+        );
+    }
+
     detectWallCollision(position) {
         const player = {
             x: position.x + 2,
@@ -254,40 +279,20 @@ export class Player {
         return false;
     }
 
-    collideTile(player, x, y) {
-        const tileHitbox = {
-            left: x * gGameEngine.tileSize,
-            top: y * gGameEngine.tileSize,
-            right: (x + 1) * gGameEngine.tileSize,
-            bottom: (y + 1) * gGameEngine.tileSize,
-        };
-
-        return (
-            player.x + player.width > tileHitbox.left &&
-            player.x < tileHitbox.right &&
-            player.y + player.height > tileHitbox.top &&
-            player.y < tileHitbox.bottom
-        );
-    }
-
     /**
      * Returns true when the bomb collision is detected, and we should not move to target position.
      */
     detectBombCollision(position) {
-        // Define the player hitbox
         const player = {
-            left: position.x,
-            top: position.y,
-            right: position.x + gGameEngine.tileSize,
-            bottom: position.y + gGameEngine.tileSize,
+            x: position.x,
+            y: position.y,
+            width: this.size.w,
+            height: this.size.h,
         };
 
-        for (let i = 0; i < gGameEngine.bombs.length; i++) {
-            var bomb = gGameEngine.bombs[i];
-            // Compare bomb position
+        const tiles = gGameEngine.bombs;
+        for (let bomb of tiles) {
             if (this.collideTile(player, bomb.position.x, bomb.position.y)) {
-            //if (bomb.position.x === position.x && bomb.position.y === position.y) {
-                // Allow to escape from bomb that appeared on my field
                 if (bomb === this.escapeBomb) {
                     return false;
                 } else {

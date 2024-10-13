@@ -126,6 +126,7 @@ export class Bot extends Player {
      * Moves a step forward to target position.
      */
     moveToTargetPosition() {
+        // Animate turning to the right direction
         this.animate(this.direction);
 
         var velocity = this.velocity;
@@ -139,13 +140,13 @@ export class Bot extends Player {
 
         var targetPosition = { x: this.bmp.x + this.dirX * velocity, y: this.bmp.y + this.dirY * velocity };
         // Attempt to fix bots walking through bombs
-        if (!this.detectWallCollision(targetPosition) /*&& !this.detectBombCollision(targetPosition)*/) {
+        if (!this.detectWallCollision(targetPosition) && !this.detectBombCollision(targetPosition)) {
             //position = this.snapToGrid(position, dirX, dirY);
             this.bmp.x = targetPosition.x;
             this.bmp.y = targetPosition.y;
+            this.updatePosition();
         }
-
-        this.updatePosition();
+        //this.updatePosition();
     }
 
     /**
